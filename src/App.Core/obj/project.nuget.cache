@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "ynvxzjyRzur4l7cvawflph86IRBmpfhrOjqrbPb28hbNjTU7gJ/fUbm2rFAAv+AWQyxSpuTFoczZcbYvG/Yhog==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\prath\\OneDrive\\Desktop\\programing\\film writing\\src\\App.Core\\App.Core.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\prath\\.nuget\\packages\\communitytoolkit.mvvm\\8.2.2\\communitytoolkit.mvvm.8.2.2.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,34 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Colors -->
+    <Color x:Key="PrimaryColor">#FFFFFF</Color>
+    <Color x:Key="SecondaryColor">#F5F5F5</Color>
+    <Color x:Key="AccentColor">#0078D4</Color>
+    <Color x:Key="TextPrimaryColor">#1E1E1E</Color>
+    <Color x:Key="TextSecondaryColor">#6E6E6E</Color>
+    
+    <!-- Brushes -->
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}"/>
+    <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource SecondaryColor}"/>
+    <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}"/>
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimaryColor}"/>
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondaryColor}"/>
+    
+    <!-- Typography -->
+    <Style x:Key="HeadingStyle" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="24"/>
+        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+        <Setter Property="Margin" Value="0,0,0,10"/>
+    </Style>
+    
+    <!-- Editor Styles -->
+    <Style x:Key="ScriptEditorStyle" TargetType="RichTextBox">
+        <Setter Property="FontFamily" Value="Courier New"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+        <Setter Property="Padding" Value="10"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+</ResourceDictionary>

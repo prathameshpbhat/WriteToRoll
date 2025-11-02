@@ -1,0 +1,15 @@
+C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.ViewModels\bin\Debug\net8.0-windows\App.ViewModels.deps.json
+C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.ViewModels\bin\Debug\net8.0-windows\App.ViewModels.dll
+C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.ViewModels\bin\Debug\net8.0-windows\App.ViewModels.pdb
+C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.ViewModels\bin\Debug\net8.0-windows\App.Core.dll
+C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.ViewModels\bin\Debug\net8.0-windows\App.Core.pdb
+C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.ViewModels\obj\Debug\net8.0-windows\App.ViewModels.csproj.AssemblyReference.cache
+C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.ViewModels\obj\Debug\net8.0-windows\App.ViewModels.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.ViewModels\obj\Debug\net8.0-windows\App.ViewModels.AssemblyInfoInputs.cache
+C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.ViewModels\obj\Debug\net8.0-windows\App.ViewModels.AssemblyInfo.cs
+C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.ViewModels\obj\Debug\net8.0-windows\App.ViewModels.csproj.CoreCompileInputs.cache
+C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.ViewModels\obj\Debug\net8.0-windows\App.View.778F9E4E.Up2Date
+C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.ViewModels\obj\Debug\net8.0-windows\App.ViewModels.dll
+C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.ViewModels\obj\Debug\net8.0-windows\refint\App.ViewModels.dll
+C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.ViewModels\obj\Debug\net8.0-windows\App.ViewModels.pdb
+C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.ViewModels\obj\Debug\net8.0-windows\ref\App.ViewModels.dll
