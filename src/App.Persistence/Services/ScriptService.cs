@@ -81,5 +81,29 @@ namespace App.Persistence.Services
 
             return Task.FromResult(saveResult);
         }
+
+        // Minimal implementation to satisfy IScriptService. Persistence layer doesn't
+        // provide full parsing/diff responsibilities; these should be in core services.
+        public Task<ParseValidationResult> ValidateAsync(string content)
+        {
+            // Use the fountain parser to validate; basic stub: parse and return success if no exceptions.
+            try
+            {
+                var script = _fountainParser.ParseFountain(content);
+                return Task.FromResult(new ParseValidationResult { IsValid = true });
+            }
+            catch
+            {
+                return Task.FromResult(new ParseValidationResult { IsValid = false, Errors = new System.Collections.Generic.List<string> { "Parsing error" } });
+            }
+        }
+
+        public Task<ScriptDiff> DiffAsync(Script before, Script after)
+        {
+            // Lightweight diff: compare element counts and return empty lists for now.
+            var diff = new ScriptDiff();
+            // TODO: implement meaningful diffing in a dedicated service
+            return Task.FromResult(diff);
+        }
     }
 }

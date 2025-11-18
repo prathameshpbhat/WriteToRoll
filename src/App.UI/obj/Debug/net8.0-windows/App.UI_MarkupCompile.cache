@@ -4,7 +4,7 @@
 library
 C#
 .cs
-C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.UI\obj\Debug\net8.0-windows\
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\obj\Debug\net8.0-windows\
 App.UI
 none
 false
@@ -13,7 +13,7 @@ TRACE;DEBUG;NET;NET8_0;NETCOREAPP
 61270917688
 
 7-747805997
-204-1722754553
+204-1460057347
 Resources.xaml;Themes\Corkboard.xaml;Themes\DarkTheme.xaml;Themes\IndexCard.xaml;Themes\LightTheme.xaml;Themes\ScriptEditor.xaml;
 
 False

@@ -1,162 +1,199 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using ActionElement = App.Core.Models.Action;
+using System.Text.RegularExpressions;
 using App.Core.Models;
 
-namespace App.Persistence.Services;
-
-public interface IFountainParser
+namespace App.Persistence.Services
 {
-    Script ParseFountain(string fountainText);
-    string ConvertToFountain(Script script);
-}
-
-public class FountainParser : IFountainParser
-{
-    public Script ParseFountain(string fountainText)
+    public class FountainParser : IFountainParser
     {
-        var script = new Script();
-        var currentScene = new Scene();
-        var lines = fountainText.Split('\n');
-        
-        foreach (var line in lines)
+        public Script ParseFountain(string fountainText)
         {
-            var trimmedLine = line.Trim();
-            if (string.IsNullOrWhiteSpace(trimmedLine))
-                continue;
+            var script = new Script();
+            if (string.IsNullOrEmpty(fountainText))
+                return script;
 
-            if (IsSceneHeading(trimmedLine))
+            var lines = fountainText.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            int i = 0;
+
+            while (i < lines.Length)
             {
-                if (currentScene.Content.Any())
+                var line = lines[i];
+                var trimmed = line.Trim();
+
+                if (string.IsNullOrWhiteSpace(trimmed))
                 {
-                    script.Scenes.Add(currentScene);
-                    currentScene = new Scene();
+                    i++;
+                    continue;
                 }
-                ParseSceneHeading(trimmedLine, currentScene);
+
+                // Title page metadata
+                if (trimmed.StartsWith("Title:"))
+                {
+                    script.Title = trimmed.Substring(6).Trim();
+                    i++;
+                    continue;
+                }
+
+                if (trimmed.StartsWith("Author:"))
+                {
+                    script.Author = trimmed.Substring(7).Trim();
+                    i++;
+                    continue;
+                }
+
+                // Scene heading
+                if (IsSceneHeading(trimmed))
+                {
+                    var upper = trimmed.ToUpper();
+                    bool isInterior = upper.StartsWith("INT");
+                    string location = ExtractLocation(upper);
+                    string time = ExtractTime(upper);
+
+                    script.Elements.Add(new SceneHeadingElement
+                    {
+                        Location = location,
+                        Time = time,
+                        IsInterior = isInterior,
+                        Text = trimmed
+                    });
+                    i++;
+                    continue;
+                }
+
+                // Character
+                if (IsCharacter(trimmed))
+                {
+                    script.Elements.Add(new CharacterElement
+                    {
+                        Name = trimmed,
+                        Text = trimmed
+                    });
+                    i++;
+                    continue;
+                }
+
+                // Transition
+                if (IsTransition(trimmed))
+                {
+                    script.Elements.Add(new TransitionElement { Text = trimmed });
+                    i++;
+                    continue;
+                }
+
+                // Dialogue
+                if (trimmed.StartsWith("(") && trimmed.EndsWith(")"))
+                {
+                    script.Elements.Add(new ParentheticalElement { Text = trimmed.Trim('(', ')') });
+                    i++;
+                    continue;
+                }
+
+                // Default to action
+                script.Elements.Add(new ActionElement { Text = trimmed });
+                i++;
             }
-            else if (IsCharacter(trimmedLine))
-            {
-                currentScene.Content.Add(new Character { Text = trimmedLine });
-            }
-            else if (IsParenthetical(trimmedLine))
-            {
-                currentScene.Content.Add(new Parenthetical { Text = trimmedLine });
-            }
-            else if (IsTransition(trimmedLine))
-            {
-                currentScene.Content.Add(new Transition { Text = trimmedLine });
-            }
-            else if (IsCenteredText(trimmedLine))
-            {
-                currentScene.Content.Add(new CenteredText { Text = trimmedLine.Trim('>')});
-            }
-            else
-            {
-                // Default to Action
-                currentScene.Content.Add(new ActionElement { Text = trimmedLine });
-            }
+
+            return script;
         }
 
-        // Add the last scene if it has content
-        if (currentScene.Content.Any())
+        public string ConvertToFountain(Script script)
         {
-            script.Scenes.Add(currentScene);
-        }
+            var output = new StringBuilder();
 
-        return script;
-    }
+            // Title page
+            if (!string.IsNullOrEmpty(script.Title))
+                output.AppendLine($"Title: {script.Title}");
+            if (!string.IsNullOrEmpty(script.Author))
+                output.AppendLine($"Author: {script.Author}");
 
-    public string ConvertToFountain(Script script)
-    {
-        var output = new StringBuilder();
+            if (!string.IsNullOrEmpty(script.Title) || !string.IsNullOrEmpty(script.Author))
+                output.AppendLine();
 
-        // Add title page metadata
-        output.AppendLine($"Title: {script.Title}");
-        output.AppendLine($"Author: {script.Author}");
-        output.AppendLine($"Draft: {script.DraftVersion}");
-        output.AppendLine();
-
-        foreach (var scene in script.Scenes)
-        {
-            // Scene heading
-            output.AppendLine(scene.Heading.ToString());
-            output.AppendLine();
-
-            foreach (var element in scene.Content)
+            // Elements
+            foreach (var element in script.Elements)
             {
                 switch (element)
                 {
-                    case Character character:
-                        output.AppendLine(character.Text.ToUpper());
+                    case SceneHeadingElement sh:
+                        output.AppendLine(sh.GetFormattedOutput());
                         break;
-                    case Parenthetical parenthetical:
-                        output.AppendLine($"({parenthetical.Text})");
+                    case ActionElement a:
+                        output.AppendLine(a.Text);
                         break;
-                    case Dialogue dialogue:
-                        output.AppendLine(dialogue.Text);
-                        output.AppendLine();
+                    case CharacterElement c:
+                        output.AppendLine(c.GetFormattedOutput());
                         break;
-                    case Transition transition:
-                        output.AppendLine($"{transition.Text.ToUpper()} TO:");
-                        output.AppendLine();
+                    case DialogueElement d:
+                        output.AppendLine(d.Text);
                         break;
-                    case CenteredText centered:
-                        output.AppendLine($">{centered.Text}<");
-                        output.AppendLine();
+                    case ParentheticalElement p:
+                        output.AppendLine(p.GetFormattedOutput());
+                        break;
+                    case TransitionElement t:
+                        output.AppendLine(t.GetFormattedOutput());
                         break;
                     default:
-                        output.AppendLine(element.Text);
-                        output.AppendLine();
+                        output.AppendLine(element.GetFormattedOutput());
                         break;
                 }
+                output.AppendLine();
             }
 
-            output.AppendLine();
+            return output.ToString();
         }
 
-        return output.ToString();
-    }
-
-    private bool IsSceneHeading(string line)
-    {
-        return line.StartsWith("INT.") || line.StartsWith("EXT.") || 
-               line.StartsWith("INT./EXT.") || line.StartsWith("INT/EXT");
-    }
-
-    private bool IsCharacter(string line)
-    {
-        return line.All(c => char.IsUpper(c) || char.IsWhiteSpace(c)) && 
-               line.Length < 40 && !line.EndsWith("TO:");
-    }
-
-    private bool IsParenthetical(string line)
-    {
-        return line.StartsWith("(") && line.EndsWith(")");
-    }
-
-    private bool IsTransition(string line)
-    {
-        return line.EndsWith("TO:") || line.StartsWith("FADE") || line.StartsWith("DISSOLVE");
-    }
-
-    private bool IsCenteredText(string line)
-    {
-        return line.StartsWith(">") && line.EndsWith("<");
-    }
-
-    private void ParseSceneHeading(string line, Scene scene)
-    {
-        var separator = " - ";
-        var parts = line.Split(new[] { separator }, 2, StringSplitOptions.None);
-        var location = parts[0].Trim();
-        var time = parts.Length > 1 ? parts[1].Trim() : string.Empty;
-
-        scene.Heading = new SceneHeading
+        public (bool Success, string Message) ValidateFountain(string fountainText)
         {
-            Location = location.Replace("INT.", "").Replace("EXT.", "").Trim(),
-            Time = time,
-            IsInterior = location.StartsWith("INT.")
-        };
+            if (string.IsNullOrWhiteSpace(fountainText))
+                return (false, "Fountain text cannot be empty");
+
+            try
+            {
+                var script = ParseFountain(fountainText);
+                if (!script.Elements.Any())
+                    return (false, "No valid screenplay elements found");
+
+                return (true, "Fountain format is valid");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Validation error: {ex.Message}");
+            }
+        }
+
+        private bool IsSceneHeading(string line)
+        {
+            var upper = line.ToUpper();
+            return Regex.IsMatch(upper, @"^\s*(INT|EXT|INT\.?/EXT\.?|EXT\.?/INT\.?)[\s\.]");
+        }
+
+        private bool IsCharacter(string line)
+        {
+            if (line.Length > 40 || line.Length < 2)
+                return false;
+            return Regex.IsMatch(line, @"^[A-Z0-9 ()''\.\-]+$");
+        }
+
+        private bool IsTransition(string line)
+        {
+            if (!line.ToUpper().EndsWith(":"))
+                return false;
+            return Regex.IsMatch(line, @"^[A-Z0-9 .''\-\(\)]+:$");
+        }
+
+        private string ExtractLocation(string sceneHeading)
+        {
+            var match = Regex.Match(sceneHeading, @"(?:INT|EXT|INT\.?/EXT\.?|EXT\.?/INT\.?)[./\s]+(.+?)(?:\s*-\s*|$)");
+            return match.Success ? match.Groups[1].Value.Trim() : sceneHeading;
+        }
+
+        private string ExtractTime(string sceneHeading)
+        {
+            var match = Regex.Match(sceneHeading, @"-\s*(.+?)$");
+            return match.Success ? match.Groups[1].Value.Trim() : "DAY";
+        }
     }
 }

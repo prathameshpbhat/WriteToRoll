@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "8mN1Cw1F55IIzymgtQoxYQbSt9rNRqCvm+4mF24sVelFiLsXuxE/q+QsNgXiqwg6ObwtXfGLEzJ9NMDgs79yKw==",
+  "dgSpecHash": "tVA2ejVp5Re4rUiOJsgMGTJ+4Xyi1YPbfiEWTIP/6ghXxXVz8hqtb5pJDLgkNrkNqE8qou9K2FtrBGYqLcC12A==",
   "success": true,
-  "projectFilePath": "C:\\Users\\prath\\OneDrive\\Desktop\\programing\\film writing\\src\\App.Host\\App.Host.csproj",
+  "projectFilePath": "C:\\Users\\prath\\OneDrive\\Desktop\\WriteToRoll\\src\\App.Host\\App.Host.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\prath\\.nuget\\packages\\communitytoolkit.mvvm\\8.2.2\\communitytoolkit.mvvm.8.2.2.nupkg.sha512",
     "C:\\Users\\prath\\.nuget\\packages\\controlzex\\4.4.0\\controlzex.4.4.0.nupkg.sha512",

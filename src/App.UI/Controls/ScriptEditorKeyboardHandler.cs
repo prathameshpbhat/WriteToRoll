@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using System.Windows.Input;
+using App.Core.Models;
 
 namespace App.UI.Controls;
 

@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using App.Core.Models;
@@ -8,17 +10,21 @@ namespace App.ViewModels
     public partial class MainViewModel : ObservableObject
     {
         private readonly IScriptService _scriptService;
-        
-        [ObservableProperty]
-        private Script _currentScript;
 
         [ObservableProperty]
-        private Scene? _selectedScene;
+        private Script currentScript;
+
+        [ObservableProperty]
+        private string windowTitle = "ScriptWriter - Untitled";
+
+        [ObservableProperty]
+        private bool isLoading;
 
         public MainViewModel(IScriptService scriptService)
         {
-            _scriptService = scriptService;
-            CurrentScript = new Script();
+            _scriptService = scriptService ?? throw new ArgumentNullException(nameof(scriptService));
+            CurrentScript = new Script { Title = "Untitled" };
+            UpdateWindowTitle();
         }
 
         [RelayCommand]
@@ -26,7 +32,8 @@ namespace App.ViewModels
         {
             if (await CheckUnsavedChanges())
             {
-                CurrentScript = new Script();
+                CurrentScript = new Script { Title = "Untitled" };
+                UpdateWindowTitle();
             }
         }
 
@@ -35,10 +42,19 @@ namespace App.ViewModels
         {
             if (await CheckUnsavedChanges())
             {
-                var result = await _scriptService.OpenFileDialogAsync();
-                if (result.Success)
+                IsLoading = true;
+                try
                 {
-                    CurrentScript = result.Script;
+                    var result = await _scriptService.OpenFileDialogAsync();
+                    if (result.Success && result.Script != null)
+                    {
+                        CurrentScript = result.Script;
+                        UpdateWindowTitle();
+                    }
+                }
+                finally
+                {
+                    IsLoading = false;
                 }
             }
         }
@@ -52,16 +68,34 @@ namespace App.ViewModels
                 return;
             }
 
-            await _scriptService.SaveAsync(CurrentScript);
+            IsLoading = true;
+            try
+            {
+                await _scriptService.SaveAsync(CurrentScript);
+                UpdateWindowTitle();
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
 
         [RelayCommand]
         private async Task SaveScriptAs()
         {
-            var result = await _scriptService.SaveFileDialogAsync(CurrentScript);
-            if (result.Success)
+            IsLoading = true;
+            try
             {
-                CurrentScript = result.Script;
+                var result = await _scriptService.SaveFileDialogAsync(CurrentScript);
+                if (result.Success && result.Script != null)
+                {
+                    CurrentScript = result.Script;
+                    UpdateWindowTitle();
+                }
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
 
@@ -71,6 +105,7 @@ namespace App.ViewModels
                 return true;
 
             var result = await _scriptService.ShowSaveChangesDialogAsync();
+
             if (result == SaveChangesResult.Cancel)
                 return false;
 
@@ -80,6 +115,24 @@ namespace App.ViewModels
             }
 
             return true;
+        }
+
+        private void UpdateWindowTitle()
+        {
+            string dirtyMarker = CurrentScript.IsDirty ? "*" : "";
+            string fileName = string.IsNullOrEmpty(CurrentScript.FilePath)
+                ? CurrentScript.Title
+                : System.IO.Path.GetFileNameWithoutExtension(CurrentScript.FilePath);
+
+            WindowTitle = $"ScriptWriter - {fileName}{dirtyMarker}";
+        }
+
+        partial void OnCurrentScriptChanged(Script value)
+        {
+            if (value != null)
+            {
+                UpdateWindowTitle();
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Documents;
+using App.Core.Models;
 
 namespace App.UI.Controls;
 
@@ -26,10 +27,13 @@ public static class ScriptElementFormats
         public static readonly double RIGHT = InchesToPixels(1.0);
         
         // Element-specific left margins in pixels
-        public static readonly double ACTION_LEFT = InchesToPixels(1.5);      // ~6 spaces
-        public static readonly double CHARACTER_LEFT = InchesToPixels(3.7);   // ~22 spaces
-        public static readonly double PARENTHETICAL_LEFT = InchesToPixels(3.2); // ~17 spaces
-        public static readonly double DIALOGUE_LEFT = InchesToPixels(2.5);    // ~15 spaces
+        public static readonly double ACTION_LEFT = InchesToPixels(1.5);
+        public static readonly double CHARACTER_LEFT = InchesToPixels(3.5);
+        public static readonly double CHARACTER_RIGHT = InchesToPixels(1.0);
+        public static readonly double PARENTHETICAL_LEFT = InchesToPixels(3.0);
+        public static readonly double PARENTHETICAL_RIGHT = InchesToPixels(2.0);
+        public static readonly double DIALOGUE_LEFT = InchesToPixels(2.5);
+        public static readonly double DIALOGUE_RIGHT = InchesToPixels(1.5);
         public static readonly double TRANSITION_LEFT = CharsToPixels(50);    // Right aligned
     }
 
@@ -46,9 +50,9 @@ public static class ScriptElementFormats
         {
             ScriptElementType.SceneHeading => new Thickness(Margins.LEFT, 24, Margins.RIGHT, 12),
             ScriptElementType.Action => new Thickness(Margins.LEFT, 12, Margins.RIGHT, 12),
-            ScriptElementType.Character => new Thickness(Margins.CHARACTER_LEFT, 24, Margins.RIGHT, 0),
-            ScriptElementType.Parenthetical => new Thickness(Margins.PARENTHETICAL_LEFT, 0, Margins.RIGHT, 0),
-            ScriptElementType.Dialogue => new Thickness(Margins.DIALOGUE_LEFT, 0, Margins.RIGHT, 12),
+            ScriptElementType.Character => new Thickness(Margins.CHARACTER_LEFT, 24, Margins.CHARACTER_RIGHT, 0),
+            ScriptElementType.Parenthetical => new Thickness(Margins.PARENTHETICAL_LEFT, 0, Margins.PARENTHETICAL_RIGHT, 0),
+            ScriptElementType.Dialogue => new Thickness(Margins.DIALOGUE_LEFT, 0, Margins.DIALOGUE_RIGHT, 12),
             ScriptElementType.Transition => new Thickness(Margins.TRANSITION_LEFT, 24, Margins.RIGHT, 24),
             ScriptElementType.Shot => new Thickness(Margins.LEFT, 12, Margins.RIGHT, 12),
             _ => new Thickness(Margins.LEFT, 12, Margins.RIGHT, 12)
@@ -71,27 +75,19 @@ public static class ScriptElementFormats
         var upperText = text.ToUpper();
         
         // Scene Heading detection - INT./EXT./INT./EXT.
-        if (upperText == "INT" || upperText == "EXT" || 
-            upperText.StartsWith("INT.") || upperText.StartsWith("EXT.") || 
-            upperText.StartsWith("INT./EXT.") || upperText.StartsWith("EXT./INT."))
+        if ((upperText.StartsWith("INT.") || upperText.StartsWith("EXT.") || 
+             upperText.StartsWith("INT./EXT.") || upperText.StartsWith("EXT./INT.")) &&
+            !upperText.StartsWith("INTO") && !upperText.StartsWith("INTERIOR"))
         {
             elementType = ScriptElementType.SceneHeading;
             return true;
         }
         
         // Transition detection - FADE IN/OUT, CUT TO:, etc.
-        if ((text.EndsWith("TO:") || text.EndsWith("IN:") || text.EndsWith("OUT:")) && 
-            (upperText == text && TransitionWords.Any(w => upperText.StartsWith(w))))
+        if (upperText == text && text.EndsWith(":") && text.Length <= 25 &&
+            TransitionWords.Any(w => upperText.StartsWith(w)))
         {
             elementType = ScriptElementType.Transition;
-            return true;
-        }
-        
-        // Character detection (all caps, no punctuation, not starting with common transition words)
-        if (upperText == text && !text.Contains("(") && !text.Contains(":") &&
-            !upperText.StartsWith("FADE") && !upperText.StartsWith("CUT") && !upperText.StartsWith("DISSOLVE"))
-        {
-            elementType = ScriptElementType.Character;
             return true;
         }
         
@@ -103,12 +99,19 @@ public static class ScriptElementFormats
         }
         
         // Shot detection - ANGLE ON:, CLOSE UP:, etc.
-        if (text.EndsWith(":") && upperText == text && 
-            (upperText.Contains("ANGLE") || upperText.Contains("CLOSE") || 
-             upperText.Contains("WIDE") || upperText.Contains("SHOT") ||
-             upperText.Contains("POV") || upperText.Contains("VIEW")))
+        if (text.EndsWith(":") && upperText == text && text.Length <= 20 &&
+            ShotWords.Any(w => upperText.Contains(w)))
         {
             elementType = ScriptElementType.Shot;
+            return true;
+        }
+        
+        // Character detection (all caps, 2-30 chars, no punctuation except O.S./V.O./CONT'D, not a transition)
+        if (upperText == text && text.Length >= 2 && text.Length <= 30 && 
+            !text.Contains(":") && !TransitionWords.Any(w => upperText.StartsWith(w)) &&
+            !ShotWords.Any(w => upperText.Contains(w)) && !upperText.StartsWith("EXTRA"))
+        {
+            elementType = ScriptElementType.Character;
             return true;
         }
 

@@ -1,0 +1,205 @@
+SCREENWRITING SOFTWARE — COMPLETE TECHNICAL NOTES
+
+This document provides a full, expanded, multi-page specification for
+building professional screenplay-writing software. It includes
+formatting standards, margins, auto-detection logic, edge-case handling,
+UI/UX behaviors, correction logic, smart intent detection, and fallback
+modes.
+
+  ------------------------------------------------------------
+  1. INTRODUCTION
+  ------------------------------------------------------------
+  A screenplay editor is not a simple text editor. It must
+  interpret user intent and automatically apply strict
+  Hollywood-standard formatting without interrupting writing
+  flow.
+
+  Core principles: - Invisible automation (format as user
+  types) - Predictive logic (guess the user’s intent from
+  patterns) - Minimal keystrokes (Enter/Tab does the heavy
+  lifting) - Error correction (auto fix small but common
+  mistakes) - Non-destructive editing (never overwrite user
+  text without warning) - Professional margins & pagination
+  standards - Clear separation of block types (Scene, Action,
+  Dialogue, etc.)
+  ------------------------------------------------------------
+
+2. SCREENPLAY BLOCK TYPES — FULL DETAILS
+
+BLOCK TYPE 1: SCENE HEADING (SLUGLINE)
+
+Format: INT./EXT. LOCATION – TIME Examples: INT. HOUSE – DAY EXT. STREET
+– NIGHT
+
+Rules: - Always ALL CAPS. - Left aligned at 1.5”. - Right margin at
+1”. - Required keywords: INT, EXT, INT./EXT, EXT./INT. - Auto-capitalize
+INT, EXT if typed in lowercase. - Auto-insert period after INT if
+missing. - Auto-insert em dash before time if not provided.
+
+Software auto-trigger: - If user types a line starting with INT, EXT,
+etc. - If user presses ENTER twice after an action block.
+
+Edge cases: - “INTO” shouldn’t become INT. - “EXTRA” shouldn’t become
+EXT. - If missing time element → append “– DAY” suggestion. - If user
+writes “INT house day” → auto-format correctly.
+
+------------------------------------------------------------------------
+
+BLOCK TYPE 2: ACTION BLOCK
+
+Describes visuals.
+
+Formatting: - Left margin 1.5”. - Right margin 1”. - Sentence case. -
+Lines wrap normally. - No special indentation.
+
+Auto-trigger: - Default mode after a Scene Heading. - If line is
+lowercase and resembles normal prose.
+
+Edge case handling: - If ALL CAPS but > 25 characters → not a character
+name. - If user pastes long paragraphs → auto-break into 4-line chunks.
+
+------------------------------------------------------------------------
+
+BLOCK TYPE 3: CHARACTER NAME
+
+Used before dialogue.
+
+Formatting: - ALL CAPS. - Center-indented: Left margin 3.5”. - Right
+margin 1”. - No punctuation allowed except (O.S.), (V.O.), (CONT’D).
+
+Auto-trigger: - User types ALL CAPS word(s) on a blank line. - User
+presses TAB on a blank line. - User ends previous block with
+parenthetical.
+
+Edge cases: - Long names (> 30 chars) → warn but allow. - “OK” in
+dialogue shouldn’t become character. - “THE DOOR” shouldn’t become a
+character name.
+
+------------------------------------------------------------------------
+
+BLOCK TYPE 4: DIALOGUE
+
+Formatting: - Left margin 2.5”. - Right margin 1.5”. - Multi-line
+wrapping inside narrow column.
+
+Auto-trigger: - Follows Character block automatically.
+
+Edge cases: - Opening “(” → likely Parenthetical. - ALL CAPS line must
+be checked: not all are Character names.
+
+Smart behavior: - ENTER → new dialogue line. - ENTER twice → back to
+Action.
+
+------------------------------------------------------------------------
+
+BLOCK TYPE 5: PARENTHETICAL
+
+Formatting: - Left margin 3.0”. - Right margin 2.0”. - Must begin and
+end with parentheses.
+
+Auto-correction: - Auto-close missing ‘)’. - Wrap text if too long.
+
+Edge cases: - Nested parentheses → merge. - Parenthetical wrongly placed
+after dialogue → convert to Action.
+
+------------------------------------------------------------------------
+
+BLOCK TYPE 6: TRANSITIONS
+
+Examples: CUT TO:, FADE OUT:
+
+Formatting: - Right aligned. - ALL CAPS. - Ends with ‘:’.
+
+Auto-detection: - ALL CAPS + colon + under 20 chars.
+
+Edge cases: - Dialogue ending with “:” should not convert. - Transition
+after dialogue: auto-insert blank line.
+
+------------------------------------------------------------------------
+
+BLOCK TYPE 7: SHOT HEADINGS
+
+Formatting: - ALL CAPS. - Action block margins.
+
+Auto-detection: - ALL CAPS line matching shot keywords: CLOSE ON, WIDE
+ON, ANGLE ON, POV, BACK TO SCENE.
+
+------------------------------------------------------------------------
+
+BLOCK TYPE 8: DUAL DIALOGUE
+
+Two characters speak at same time.
+
+Implementation: - Two columns. - Align parentheticals with correct
+character. - Auto-pad shorter side.
+
+------------------------------------------------------------------------
+
+BLOCK TYPE 9: TITLE PAGE
+
+-   Title centered.
+-   Writer centered.
+-   Contact bottom-right.
+-   No page number.
+
+  ------------------------------------------------------------
+  3. STANDARD MARGINS TABLE
+  ------------------------------------------------------------
+  Scene Heading: 1.5” left, 1” right Action: 1.5” left, 1”
+  right Character: 3.5” left, 1” right Dialogue: 2.5” left,
+  1.5” right Parenthetical: 3.0” left, 2.0” right Transition:
+  Right aligned
+
+  ------------------------------------------------------------
+
+4. AUTO-DETECTION REGEX
+
+Scene Heading: ^(INT|EXT|INT/EXT|EXT/INT)[.]
+Character: [1]{2,30}$
+Transition: [2]{2,25}:$
+Parenthetical: ^(.+)$
+Shot: ^(CLOSE|ANGLE|POV|WIDE|BACK|ON).*
+
+  ------------------------------------------------------------
+  5. EDGE CASE LOGIC
+  ------------------------------------------------------------
+  - ALL CAPS long lines → Action. - Fix malformed sluglines. -
+  Wrap overly wide dialogue. - Compress multiline
+  parentheticals. - Handle misdetection due to paste.
+
+  ------------------------------------------------------------
+
+6. SMART KEYBOARD LOGIC
+
+TAB: - Blank → Character - Character → Dialogue - Dialogue →
+Parenthetical
+
+ENTER: - From Character → Dialogue - From Dialogue → Dialogue - Double
+ENTER → Action
+
+Auto-corrections: - Auto close (), “” . - Add “– DAY” if missing. -
+Insert (CONT’D) automatically.
+
+  ------------------------------------------------------------
+  7. UI/UX RULES
+  ------------------------------------------------------------
+  - Toolbar with block types. - Live-page preview. - Export to
+  PDF, FDX, Fountain. - Dark mode. - Auto-save with history.
+
+  ------------------------------------------------------------
+
+8. EXPORT BEHAVIOR
+
+PDF: - Courier 12. - 55 lines/page. - 1” top/bottom.
+
+FDX: - Proper tag mapping.
+
+Fountain: - Use @Character, === for sluglines.
+
+  --------------
+  END OF NOTES
+  --------------
+
+[1] A-Z0-9 ()’.-
+
+[2] A-Z

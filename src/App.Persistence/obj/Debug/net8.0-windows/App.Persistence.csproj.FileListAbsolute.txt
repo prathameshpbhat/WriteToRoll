@@ -13,3 +13,19 @@ C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.Persistence\obj\
 C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.Persistence\obj\Debug\net8.0-windows\refint\App.Persistence.dll
 C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.Persistence\obj\Debug\net8.0-windows\App.Persistence.pdb
 C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.Persistence\obj\Debug\net8.0-windows\ref\App.Persistence.dll
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.Persistence\bin\Debug\net8.0-windows\App.Persistence.deps.json
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.Persistence\bin\Debug\net8.0-windows\App.Persistence.dll
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.Persistence\bin\Debug\net8.0-windows\App.Persistence.pdb
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.Persistence\bin\Debug\net8.0-windows\App.Core.dll
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.Persistence\bin\Debug\net8.0-windows\App.Core.pdb
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.Persistence\obj\Debug\net8.0-windows\App.Persistence.csproj.AssemblyReference.cache
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.Persistence\obj\Debug\net8.0-windows\App.Persistence.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.Persistence\obj\Debug\net8.0-windows\App.Persistence.AssemblyInfoInputs.cache
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.Persistence\obj\Debug\net8.0-windows\App.Persistence.AssemblyInfo.cs
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.Persistence\obj\Debug\net8.0-windows\App.Persistence.csproj.CoreCompileInputs.cache
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.Persistence\obj\Debug\net8.0-windows\App.Persistence.sourcelink.json
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.Persistence\obj\Debug\net8.0-windows\App.Pers.C3A6D0CD.Up2Date
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.Persistence\obj\Debug\net8.0-windows\App.Persistence.dll
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.Persistence\obj\Debug\net8.0-windows\refint\App.Persistence.dll
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.Persistence\obj\Debug\net8.0-windows\App.Persistence.pdb
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.Persistence\obj\Debug\net8.0-windows\ref\App.Persistence.dll

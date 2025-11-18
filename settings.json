@@ -1,0 +1,381 @@
+{
+  "application": {
+    "name": "ScriptWriter Pro",
+    "version": "1.0.0",
+    "author": "WriteToRoll Development Team",
+    "description": "Professional screenplay writing and formatting tool"
+  },
+  "editor": {
+    "fontFamily": "Courier New",
+    "fontSize": 12,
+    "lineHeight": 1.5,
+    "tabSize": 4,
+    "insertSpaces": true,
+    "wordWrap": true,
+    "autoSave": true,
+    "autoSaveInterval": 30000,
+    "showLineNumbers": true,
+    "showWhitespace": false,
+    "trimTrailingWhitespace": true,
+    "insertFinalNewline": true,
+    "rulers": [80, 120],
+    "bracketPairColorization": true
+  },
+  "screenplay": {
+    "formatting": {
+      "sceneHeading": {
+        "leftMargin": "1.5\"",
+        "rightMargin": "1.0\"",
+        "alignment": "Left",
+        "fontWeight": "bold"
+      },
+      "action": {
+        "leftMargin": "1.5\"",
+        "rightMargin": "1.0\"",
+        "alignment": "Left"
+      },
+      "character": {
+        "leftMargin": "3.5\"",
+        "rightMargin": "1.0\"",
+        "alignment": "Center",
+        "fontWeight": "bold"
+      },
+      "dialogue": {
+        "leftMargin": "2.5\"",
+        "rightMargin": "1.5\"",
+        "alignment": "Left"
+      },
+      "parenthetical": {
+        "leftMargin": "3.0\"",
+        "rightMargin": "2.0\"",
+        "alignment": "Left",
+        "fontStyle": "italic"
+      },
+      "transition": {
+        "leftMargin": "6.0\"",
+        "rightMargin": "1.0\"",
+        "alignment": "Right",
+        "fontWeight": "bold"
+      },
+      "shot": {
+        "leftMargin": "1.5\"",
+        "rightMargin": "1.0\"",
+        "alignment": "Left",
+        "fontWeight": "bold"
+      },
+      "centeredText": {
+        "leftMargin": "2.5\"",
+        "rightMargin": "2.5\"",
+        "alignment": "Center"
+      }
+    },
+    "pageSettings": {
+      "paperSize": "Letter",
+      "pageWidth": "8.5\"",
+      "pageHeight": "11\"",
+      "topMargin": "1\"",
+      "bottomMargin": "1\"",
+      "linesPerPage": 55,
+      "charactersPerLine": 60
+    },
+    "scriptDefaults": {
+      "defaultTimeOfDay": "DAY",
+      "defaultDraftNumber": "1.0",
+      "includeSceneNumbers": true,
+      "sceneNumberFormat": "1-1",
+      "sluglineFormat": "INT./EXT.",
+      "autoNumberScenesOnExport": true
+    },
+    "detectionRules": {
+      "enableAutoDetection": true,
+      "detectSceneHeadings": true,
+      "detectCharacterNames": true,
+      "detectTransitions": true,
+      "detectDialogue": true,
+      "detectParentheticals": true,
+      "detectShots": true,
+      "enforceCharacterUppercase": true,
+      "enforceTransitionRightAlign": true,
+      "suggestTimeOfDay": true,
+      "timeOfDayTokens": [
+        "DAY",
+        "NIGHT",
+        "MORNING",
+        "EVENING",
+        "NOON",
+        "DAWN",
+        "DUSK",
+        "LATER",
+        "CONTINUOUS",
+        "MOMENTS LATER",
+        "SAME TIME",
+        "EARLIER",
+        "NEXT DAY"
+      ],
+      "locationTokens": [
+        "INT.",
+        "EXT.",
+        "INT./EXT.",
+        "EXT./INT."
+      ]
+    }
+  },
+  "ui": {
+    "theme": "Light",
+    "colorScheme": "Default",
+    "fontSize": 12,
+    "showStatusBar": true,
+    "showToolbar": true,
+    "showRulers": true,
+    "showIndexCards": true,
+    "showOutline": true,
+    "showCharacterTracker": true,
+    "outlinePanelWidth": 250,
+    "indexCardsPanelWidth": 300,
+    "characterTrackerPanelWidth": 280,
+    "accentColor": "#2196F3",
+    "windowState": "Normal",
+    "windowHeight": 800,
+    "windowWidth": 1200,
+    "rememberWindowSize": true,
+    "darkModeEnabled": false,
+    "highContrastMode": false
+  },
+  "colors": {
+    "sceneHeading": "#0066CC",
+    "character": "#008000",
+    "dialogue": "#000000",
+    "action": "#000000",
+    "parenthetical": "#666666",
+    "transition": "#CC0000",
+    "shot": "#0066CC",
+    "centeredText": "#000000",
+    "note": "#FF6600",
+    "synopsis": "#0099CC",
+    "background": "#FFFFFF",
+    "lineNumbers": "#999999",
+    "editorBackground": "#FAFAFA",
+    "cursorColor": "#000000",
+    "selectionBackground": "#ADD6FF"
+  },
+  "keyboard": {
+    "enableVimMode": false,
+    "enableEmacsMode": false,
+    "customBindings": {
+      "newScript": "Ctrl+N",
+      "openScript": "Ctrl+O",
+      "saveScript": "Ctrl+S",
+      "saveAsScript": "Ctrl+Shift+S",
+      "undo": "Ctrl+Z",
+      "redo": "Ctrl+Y",
+      "cut": "Ctrl+X",
+      "copy": "Ctrl+C",
+      "paste": "Ctrl+V",
+      "selectAll": "Ctrl+A",
+      "find": "Ctrl+F",
+      "findAndReplace": "Ctrl+H",
+      "goToLine": "Ctrl+G",
+      "toggleComment": "Ctrl+/",
+      "formatDocument": "Ctrl+Alt+F",
+      "insertSceneNumber": "Ctrl+Shift+N",
+      "insertCharacterName": "Ctrl+Alt+C",
+      "insertTransition": "Ctrl+Alt+T",
+      "toggleOutline": "Ctrl+Alt+O",
+      "toggleIndexCards": "Ctrl+Alt+I",
+      "toggleCharacterTracker": "Ctrl+Alt+H",
+      "nextScene": "Ctrl+Right",
+      "previousScene": "Ctrl+Left",
+      "focusEditor": "Ctrl+Alt+E",
+      "focusOutline": "Ctrl+Alt+L",
+      "fullScreen": "F11",
+      "zoomIn": "Ctrl+Plus",
+      "zoomOut": "Ctrl+Minus"
+    }
+  },
+  "files": {
+    "defaultDirectory": "Documents/ScriptWriter",
+    "autoSaveDirectory": "Documents/ScriptWriter/AutoSave",
+    "backupDirectory": "Documents/ScriptWriter/Backups",
+    "autoSaveEnabled": true,
+    "autoSaveInterval": 30000,
+    "keepAutoSaveFiles": true,
+    "autoSaveMaxFiles": 20,
+    "createBackupOnSave": true,
+    "backupMaxFiles": 10,
+    "recentFilesCount": 10,
+    "fileWatcherEnabled": true,
+    "supportedFormats": [
+      ".fountain",
+      ".fdx",
+      ".pdf",
+      ".txt",
+      ".docx"
+    ]
+  },
+  "export": {
+    "defaultFormat": "PDF",
+    "includeSceneNumbers": true,
+    "includeCenteredText": true,
+    "includeNotes": false,
+    "includeSynopsis": false,
+    "pageNumbers": true,
+    "pageNumberFormat": "centered",
+    "splitChaptersOnActs": false,
+    "watermark": "",
+    "compression": "default",
+    "paperSize": "Letter",
+    "fontFamily": "Courier New",
+    "fontSize": 12,
+    "lineSpacing": 1.5,
+    "doubleSpace": false,
+    "formats": {
+      "pdf": {
+        "enabled": true,
+        "includeMetadata": true,
+        "bookmarks": true,
+        "links": true,
+        "compression": "high"
+      },
+      "fountain": {
+        "enabled": true,
+        "includeMetadata": true,
+        "prettyPrint": true
+      },
+      "finalDraft": {
+        "enabled": true,
+        "version": "11",
+        "includeMetadata": true
+      },
+      "docx": {
+        "enabled": true,
+        "includeMetadata": true,
+        "styles": true
+      }
+    }
+  },
+  "characters": {
+    "trackCharacters": true,
+    "showCharacterList": true,
+    "sortCharactersBy": "FirstAppearance",
+    "colorCodingEnabled": true,
+    "highlightCharacterNames": true,
+    "trackScreenTime": true,
+    "trackDialogueCount": true,
+    "showCharacterSpotlight": true
+  },
+  "spellcheck": {
+    "enabled": true,
+    "language": "en-US",
+    "ignoreWords": [],
+    "ignoreAllCaps": false,
+    "ignoreHyphenated": false,
+    "ignoreNumbers": true,
+    "ignoreScreenwritingTerms": true,
+    "underlineColor": "#FF0000",
+    "underlineStyle": "wavy"
+  },
+  "grammar": {
+    "enabled": false,
+    "checkPunctuation": false,
+    "checkCapitalization": false,
+    "checkDialogue": false,
+    "checkScriptFormatting": true
+  },
+  "collaboration": {
+    "enabled": false,
+    "autoSync": false,
+    "conflictResolution": "manual",
+    "trackChanges": true,
+    "showChangesPane": true,
+    "acceptAllChanges": false,
+    "rejectAllChanges": false
+  },
+  "plugins": {
+    "enabled": true,
+    "pluginDirectory": "Plugins",
+    "autoLoad": true,
+    "loadedPlugins": []
+  },
+  "debugging": {
+    "enableDebugMode": false,
+    "logLevel": "Info",
+    "logFile": "logs/scriptwriter.log",
+    "maxLogFileSize": 10485760,
+    "maxLogFiles": 5,
+    "enablePerformanceProfiling": false,
+    "enableDetailedErrorReporting": false
+  },
+  "accessibility": {
+    "enableTextToSpeech": false,
+    "enableSpeechToText": false,
+    "fontSize": 12,
+    "highContrast": false,
+    "screenReaderSupport": true,
+    "keyboardNavigationOnly": false,
+    "focusIndicator": "outline"
+  },
+  "updates": {
+    "checkForUpdates": true,
+    "checkInterval": 604800000,
+    "autoDownloadUpdates": false,
+    "autoInstallUpdates": false,
+    "betaUpdates": false,
+    "updateChannel": "stable"
+  },
+  "telemetry": {
+    "enabled": false,
+    "reportErrors": false,
+    "reportUsageData": false,
+    "shareDocumentMetadata": false
+  },
+  "shortcut_tips": {
+    "description": "Common keyboard shortcuts for ScriptWriter Pro",
+    "editing": {
+      "new_document": "Ctrl+N",
+      "open_document": "Ctrl+O",
+      "save_document": "Ctrl+S",
+      "save_as": "Ctrl+Shift+S",
+      "close_document": "Ctrl+W",
+      "undo": "Ctrl+Z",
+      "redo": "Ctrl+Y or Ctrl+Shift+Z",
+      "cut": "Ctrl+X",
+      "copy": "Ctrl+C",
+      "paste": "Ctrl+V"
+    },
+    "search_and_navigation": {
+      "find": "Ctrl+F",
+      "find_and_replace": "Ctrl+H",
+      "go_to_line": "Ctrl+G",
+      "next_scene": "Ctrl+Right",
+      "previous_scene": "Ctrl+Left",
+      "jump_to_scene": "Ctrl+Shift+J"
+    },
+    "formatting": {
+      "bold": "Ctrl+B",
+      "italic": "Ctrl+I",
+      "underline": "Ctrl+U",
+      "format_document": "Ctrl+Alt+F",
+      "increase_font": "Ctrl+Plus",
+      "decrease_font": "Ctrl+Minus"
+    },
+    "screenplay_specific": {
+      "insert_scene_number": "Ctrl+Shift+N",
+      "insert_character": "Ctrl+Alt+C",
+      "insert_transition": "Ctrl+Alt+T",
+      "force_action": "!",
+      "force_character": "@",
+      "centered_text": "> text <",
+      "parenthetical": "(text)",
+      "dual_dialogue": "[[ character1 | character2 ]]"
+    },
+    "panels_and_views": {
+      "toggle_outline": "Ctrl+Alt+O",
+      "toggle_index_cards": "Ctrl+Alt+I",
+      "toggle_character_tracker": "Ctrl+Alt+H",
+      "toggle_statistics": "Ctrl+Alt+S",
+      "focus_editor": "Ctrl+Alt+E",
+      "full_screen": "F11",
+      "distraction_free_mode": "Ctrl+Alt+D"
+    }
+  }
+}

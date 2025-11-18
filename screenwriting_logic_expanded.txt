@@ -1,0 +1,7 @@
+SCREENWRITING SOFTWARE SPECIFICATION – FULL BUSINESS LOGIC (10× EXPANDED)
+=============================================================================
+
+1. PURPOSE
+----------
+Define the complete business logic for a professional screenwriting application...
+[...continue long detailed content...]

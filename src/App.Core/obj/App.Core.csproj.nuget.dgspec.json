@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\prath\\OneDrive\\Desktop\\programing\\film writing\\src\\App.Core\\App.Core.csproj": {}
+    "C:\\Users\\prath\\OneDrive\\Desktop\\WriteToRoll\\src\\App.Core\\App.Core.csproj": {}
   },
   "projects": {
-    "C:\\Users\\prath\\OneDrive\\Desktop\\programing\\film writing\\src\\App.Core\\App.Core.csproj": {
+    "C:\\Users\\prath\\OneDrive\\Desktop\\WriteToRoll\\src\\App.Core\\App.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\prath\\OneDrive\\Desktop\\programing\\film writing\\src\\App.Core\\App.Core.csproj",
+        "projectUniqueName": "C:\\Users\\prath\\OneDrive\\Desktop\\WriteToRoll\\src\\App.Core\\App.Core.csproj",
         "projectName": "App.Core",
-        "projectPath": "C:\\Users\\prath\\OneDrive\\Desktop\\programing\\film writing\\src\\App.Core\\App.Core.csproj",
+        "projectPath": "C:\\Users\\prath\\OneDrive\\Desktop\\WriteToRoll\\src\\App.Core\\App.Core.csproj",
         "packagesPath": "C:\\Users\\prath\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\prath\\OneDrive\\Desktop\\programing\\film writing\\src\\App.Core\\obj\\",
+        "outputPath": "C:\\Users\\prath\\OneDrive\\Desktop\\WriteToRoll\\src\\App.Core\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
