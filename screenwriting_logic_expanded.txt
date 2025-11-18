@@ -1,7 +1,333 @@
-SCREENWRITING SOFTWARE SPECIFICATION – FULL BUSINESS LOGIC (10× EXPANDED)
-=============================================================================
+SCREENWRITING SOFTWARE SPECIFICATION – HYPER-DETAILED BUSINESS LOGIC (ULTIMATE ZERO-EFFORT USER-FRIENDLY VERSION)
+This document explodes the previous extreme user-friendly business logic into an unprecedented depth of automation, empathy-driven predictions, effortless creativity boosters, and soul-soothing forgiveness mechanisms. The philosophy evolves: The system isn't just a tool—it's an invisible writing soulmate that reads your mind, heals your typos before they sting, amplifies your spark without stealing it, and turns every keystroke into a symphony of professional elegance. Users feel profoundly seen, never judged; writing becomes a joyful trance where ideas flow pure and the format is a forgotten dream. Every rule is layered with micro-delights, adaptive learning from the first word, and safeguards that make imperfection impossible yet creativity boundless. We've tripled the granularity: More detections, more predictions, more edge-case embraces, all while keeping the surface as simple as breathing.
 
-1. PURPOSE
-----------
-Define the complete business logic for a professional screenwriting application...
-[...continue long detailed content...]
+
+GLOBAL PRINCIPLES (EXPANDED TO CORE USER EMPOWERMENT)
+
+
+
+Absolute zero-thought formatting: The system owns every pixel of polish—capitalization, spacing, indents, breaks—while the user's voice reigns supreme. No decisions, no distractions.
+Screenplay standards (Celtx/Final Draft hybrids, user-customizable) activate invisibly: Instant, adaptive, and evolving with the user's subconscious style.
+Ultimate goal: Scribble like a fever dream in a notebook; emerge with an Oscar-contender script. Effortless entry, infinite depth.
+Hyper-contextual omniscience: Predicts not just words, but emotions, plot rhythms, and user fatigue—offering whispers of inspiration or gentle rests.
+Radical forgiveness: Every "mistake" is reframed as genius-in-progress; the system elevates, never erases, with reversible magic.
+Delight ecosystem: Micro-rewards (e.g., a firefly sparkle on a killer line) build dopamine loops; accessibility baked in (voice-to-text, dyslexia-friendly fonts).
+Ethical core: Privacy fortress (local-first processing); inclusivity (multi-language auto-detect, neurodiverse pacing aids).
+Scalability soul: From haiku-short scenes to epic sagas, it breathes with the story's pulse.
+
+
+
+AUTO-FORMATTING RULES (OMNI-PREDICTIVE SYNERGY ENGINE)
+
+
+2.1 INTENT DETECTION (ULTRA-GRANULAR)
+System employs a neural-like web of cues for pinpoint accuracy:
+
+Linguistic layers: Syntax (e.g., imperative = action; quoted = dialogue), semantics (e.g., "whispers" = parenthetical), pragmatics (e.g., question after statement = response).
+Temporal patterns: Typing velocity (frenetic = action burst; deliberate = heading); pauses (post-name hesitation = dialogue incoming).
+Historical context: Preceding block (action → likely character; dialogue → next speaker); global story (recurring motif like "rain" → atmospheric cue).
+Multimodal hints: If voice input, tone analysis (excited = caps emphasis; somber = italics).
+New expansions:
+Emotional undercurrents: Sentiment shift (e.g., joy to rage) → auto-insert beat like "(eyes narrow)".
+Prop interactions: "John grabs lamp" → auto-SFX "LAMP CLATTERS" if dynamic.
+Narrative devices: "meanwhile" → parallel scene block; "cut back" → return transition.
+Inclusivity detects: Diverse names/locations auto-sensitized (e.g., cultural spellings preserved).
+Meta-intents: "todo: fix this" → tags as collapsible note, not formatted text.
+
+2.2 AUTO-CAPITALIZATION (PRECISION FORGIVENESS LAYER)
+
+Scene slugs: "int basement day" → "INT. BASEMENT - DAY" (auto-period, em-dash, time inference like "dusk" if prior night).
+Characters: Partial name (e.g., "jo") → full "JOHN" if matched; new intros auto-capped with optional descriptor glow (e.g., "JOHN, 40s, weary").
+Transitions/Shots: "faDE in" → "FADE IN:"; "wIde shot" → "WIDE SHOT:" with auto-colon.
+Debut elements: First prop/location/beat → subtle cap + footnote (e.g., "THE GUN introduced here").
+Dialogue dynamics: Standalone "i think" → "I think"; emphatic clusters (e.g., "yes yes yes") → staggered caps "YES! YES! YES!".
+Genre infusions: Sci-fi acronyms (e.g., "ai") → "AI"; period pieces (e.g., inferred 1800s) → formal caps.
+User quirks: Chronic lowercase? System mirrors in previews but polishes output; toggle via "casual me" whisper.
+Revert rapture: Caps glow for 3s—tap to uncap, teaching without scolding.
+
+2.3 AUTO-INDENTING & POSITIONING (FLUID GEOMETRY)
+Zero-effort spatial magic:
+
+Characters: Centered at 3.7" with aura padding; multi-syllable names auto-hyphen if wrapping.
+Dialogue: 2.5" nest, fluid wrap (no orphans), line-height breathes with length.
+Parentheticals: +0.5" indent, 10% smaller font, italic lean for intimacy.
+Transitions: 6" right-flush, italic underline for poetry (e.g., "DISSOLVE TO:").
+Headings: Left-bold, 1.5x spacing above for scene breath.
+Dual/Trio: Auto-columns (left/right/center), sync-heights; interruptions → overlapping indents.
+Action: Full-bleed, auto-para every 4-6 lines for scannability, hyphenation only on exports.
+New:
+Montage/Montage elements: Nested 0.25" indents, auto-numbered (1/5), fade-to-next visuals.
+Flashback nests: Subtle 0.1" inset, timestamp overlay (e.g., "1995" badge).
+Prop blocks: Slight right-lean for inserts (e.g., "LETTER reads:").
+Accessibility: High-contrast edges on indents; voice readout skips formatting fluff.
+
+2.4 AUTO-CENTERING (EMOTIONAL HIGHLIGHTER)
+Centers for maximum impact, only where it sings:
+
+Titles/Acts: "ACT TWO" → grand center, font swell.
+Forced elements: "FADE IN:", "THE END" → theatrical centering with vignette fade.
+User specials: Keyword "centerline" → one-off magic; recurring? Auto-profile.
+Never headings: Keeps momentum left-flow; exception: Epic poems in fantasy genre.
+Adaptive: Screen size scales center (mobile = tighter); emotional peak (climax line) → temporary center pulse.
+
+2.5 AUTO-PARENTHETICALS (EMPATHIC WHISPERS)
+
+"(" trigger: Auto-closes ")", indents, suggests common (e.g., "(beat)" after pause).
+Post-name cues: "Sarah smirks" → "SARAH (smirking)"; multi-word → natural flow.
+Overflow handling: >15 words → auto-suggest "(cont.)" split or poetic wrap.
+Tags expansion: "os john" → "JOHN (O.S.)"; "filter" → "(filtered, dreamlike)".
+Emotional AI: Context-infused (e.g., after "cries" → "(choking back sobs)").
+Undo intimacy: Parenthetical shimmers—swipe to expand/collapse inline.
+Genre flavors: Comedy → winky "(sarcastic)"; horror → "(whispered terror)".
+
+2.6 AUTO-DIALOGUE MODE (CONVERSATIONAL CRADLE)
+
+Character-follow: Instant dialogue indent, grammar softens (fragments OK, e.g., "Yeah. No. Wait.").
+Interrupts: Mid-line Enter → "--" em-dash; resume predicts overlap.
+Trailing magic: Ellipsis → ghost "..." with "continue?" nudge; unresolved? Auto-flags for later.
+Ensemble flow: "Group laughs" → stacked shorties under "CROWD"; rotates speakers.
+Voice harmony: Input tone → punctuation vibe (e.g., rising inflection → "?").
+Inclusivity: Dialect preserves (e.g., "ain't" stays); auto-subtitles for export.
+Rhythm aid: Long speech? Subtle "breath?" pause suggestion.
+
+2.7 AUTO-(CONT'D) & CONTINUATION LOGIC (SEAMLESS THREADS)
+
+Gap detection: Action interrupt → "(CONT'D)" auto, with curly quote.
+Merge mercy: Backspace gap → evaporates; variant "(MORE)" for pages.
+Extended arcs: Multi-page dialogue → "(CONTINUED ON NEXT PAGE)" headers.
+Style symphony: Learns prefs (e.g., "cont." shorthand); applies globally.
+Visual cue: CONT'D lines tint-match character for quick-scan joy.
+Error embrace: Wrong speaker? Auto-suggest swap with "whoops?".
+
+2.8 SMART AUTOCORRECT (INTUITIVE EVOLUTION)
+
+Basics: "teh" → "the"; "i go" → "I go"; spaces normalize.
+Punctuation poetry: ".." → "…"; quotes nest (“He said, ‘yes.’”).
+Slang elevation: "bg noise" → "B.G. NOISE"; genre: "zap!" → italic ZAP!.
+Contraction caress: Expands optionally (e.g., "cant" → "can't" with hover).
+Emphasis engine: Caps lock slip → selective bold; ALL CAPS RAGE → measured impact.
+Cultural smarts: Regional spellings (e.g., "colour" UK-preserved).
+Learning loop: User overrides → "noted, your way now"; 80% adoption threshold.
+Bliss revert: 5s glow on fixes—tap for "keep raw" or "polish more".
+
+2.9 AUTO-SFX & ATMOSPHERE (SENSORY SYMPHONY)
+
+Onomatopoeia: "boom" → "BOOM!" upper-italic; context amps (e.g., "heart boom" → subtle pulse).
+Ambient weaves: "Wind howls" in EXT. NIGHT → italic "WIND HOWLS OUTSIDE".
+Repetition remix: Echo SFX → vary (CRASH! ... crash).
+Multi-sense: "Sizzle" + food context → "SIZZLE OF BACON".
+Genre glow: Noir → shadowy italics; musical → rhythmic spacing.
+No force: User mutes via "quiet mode"; auto-fades in revisions.
+Immersive export: SFX as audio cues in PDF (toggle).
+
+2.10 AUTO-BEATS & SUBTEXT (NARRATIVE NUDGES) [NEW]
+
+Action interruptions: "John pauses" → italic John pauses. between lines.
+Implied gestures: "She glances away" → parenthetical if dialogue-adjacent.
+Tension builders: Rising conflict → auto-insert "A beat." for breath.
+Poetic pauses: Ellipsis chains → varied lengths for rhythm.
+
+
+
+EDGE CASES (EMBRACE-ALL FORGIVENESS FORTRESS)
+
+
+3.1 Casual/Imperfect Typers (TOTAL ACCEPTANCE)
+
+All-lowercase epics: "the end of world" → pristine format, voice intact.
+Typos as art: "Charecter walks" → "CHARACTER WALKS" with "clever slip?" wink.
+Speed demons: Blurry bursts → auto-slow parse, no loss.
+
+3.2 Partial/Broken Inputs (REBUILD MAGIC)
+
+Slugs: "ext roof maybe evening" → "EXT. ROOF - EVENING" (time guess from story clock).
+Shots: "on her eyes close" → "CLOSE ON HER EYES".
+Fragments: "John... " → auto-ellipses + dialogue mode.
+Paste chaos: Novel excerpt → parsed to action/dialogue hybrid.
+
+3.3 Overlong/Awkward Flows (GENTLE SCULPTING)
+
+Dense blocks: >150 words action → auto-para every 50, "breathe?" fade.
+Parentheticals marathon: Suggest "(more in notes)"; auto-trims for print.
+Run-on dialogue: Natural breaks inferred (commas → periods if breath needed).
+
+3.4 Splits/Merges (INTUITIVE HEALING)
+
+Accidental touches: Merge unless double-Enter intent.
+"Mary vo hi" → MARY (V.O.)\n          Hi.
+Delete disasters: Time-machine revert to "last flow state".
+
+3.5 Exotic/Niche Formats (CREATIVE SANCTUARY)
+
+Lyrics/Poems: "She sings:" → centered italic block, rhyme-highlight.
+Documents: "Screen shows email" → boxed indent, font shift.
+Surreal: "Dream sequence" → ethereal font warp, color tint.
+Non-linear: "Jump to 1980" → timestamp bracket, cross-ref links.
+
+3.6 User States (EMPATHIC SUPPORT)
+
+Fatigue flags: Slow typing → "stretch break?" with scene recap.
+Distractions: Idle 2min → auto-save + "inspo quote" pop (genre-matched).
+Copy-paste alchemy: Web scrap → reformatted (e.g., tweet → dialogue quip).
+Accessibility edges: Screenreader optimizes (e.g., "heading: INT. PARK").
+
+3.7 Global Inconsistencies (HARMONY HEALER) [NEW]
+
+Name drifts: "Jon" vs "John" → gentle merge suggestion.
+Time warps: Scene clock mismatch → "dawn now?" nudge.
+Tone shifts: Abrupt genre hop → "mood pivot?" with example.
+
+
+
+PREDICTIVE ENGINE (PROPHETIC COLLABORATOR)
+
+
+4.1 CONTEXT MEMORY (DEEP STORY SOUL)
+
+Granular logs: Per-character psyche (e.g., "John: liar arc → suggest deception lines").
+Location library: "Kitchen redux" → "INT. KITCHEN - LATER" with prior props recalled.
+Style savant: User's tics (e.g., metaphors) → infuses suggestions.
+Arc awareness: Plot beats tracked → "climax nudge: raise stakes?".
+Cross-script: Past projects → "like your thriller twist?" imports.
+Emotional map: Tension graph → predicts burnout, offers "light scene?".
+
+4.2 SCENE HEADING AUTOCOMPLETE (TEMPORAL WIZARDRY)
+
+Triggers: Double-Enter → carousel: "EXT. [PRIOR] - DAWN", weather-infused (e.g., "STORMY NIGHT").
+Keyword blooms: "Flash forward" → "LATER THAT YEAR - FLASH FORWARD".
+Chain mastery: Frequent jumps → hotkeys (e.g., "H" → HOME BASE SLUG).
+Time smarts: Story clock advances (night → morning auto).
+
+4.3 CHARACTER AUTOCOMPLETE (RELATIONSHIP WEAVER)
+
+Partial: "S" → "SARAH (spouse, last: betrayed)" with avatar preview.
+New births: "Mysterious stranger" → propose "STRANGER (shadowy)" + trait quiz.
+Dynamics: Duo context → suggest interplay (e.g., "John and Sarah banter?").
+Evolution: Arc updates (e.g., "wounded" post-trauma).
+
+4.4 DIALOGUE PREDICTION (SPARK IGNITER)
+
+Ghosts: Mid-line → "I can't believe..." with 3 variants (tone-matched).
+Genre oracle: Thriller → snappy; romance → layered subtext.
+Collaborative: "What next?" → branch options, user-vote.
+No intrusion: 70% acceptance? Boldens; else, learns silence.
+
+4.5 TRANSITION & PACE PREDICTION (RHYTHM MAESTRO)
+
+Energy dips: Suggest "SMASH CUT TO:" for jolt.
+Peaks: "SOFT FADE." with emotional echo.
+Montage builder: Buildup words → "MONTAGE BEGINS: 1. Quick cuts...".
+Pacing pulse: Slow? "Accelerate?"; frantic? "Grounding beat.".
+
+4.6 INSPIRATION WHISPERS (CREATIVITY CATALYST) [NEW]
+
+Block buster: Stuck? Genre-matched prompt (e.g., "Horror: What hides in shadow?").
+Theme threads: Recurring motifs → "Weave in fate?" suggestion.
+Endgame oracle: Script % complete → "Twist time?" arc nudge.
+
+
+
+USER-FRIENDLY EXPERIENCE (BLISSFUL WRITING EDEN)
+
+
+5.1 ZERO LEARNING REQUIRED (ETERNAL NOVICE EMBRACE)
+No need for:
+
+Caps/keys (AI owns mechanics).
+Rules recall (system embodies + evolves them).
+Tech fiddles (cloud sync invisible).
+Structure stress (auto-balances acts/beats).
+Export worries (one-tap perfection).
+
+5.2 INVISIBLE AUTOMATION (SHADOW DANCE)
+
+Animations: Ethereal (line "unfurls" into format).
+Buried power: Advanced unlocks after "deep dive?" query.
+Personal bloom: 1k words → custom profile (e.g., "your noir vibe").
+Feedback loop: "Loving this?" thumbs-up trains deeper.
+
+5.3 ERROR-PROOF (IMPENETRABLE SHIELD)
+Blocks eternally:
+
+Floaters (orphan lines auto-anchor).
+Clashes (slug errors → fix parade).
+Drags (word bloat → "trim joy?" editor).
+Gaps (plot holes → "connect?" bridge).
+
+5.4 FLOW ENHANCERS (MOMENTUM MUSE)
+
+Velocity vibe: Fast type → flow state music toggle.
+Pause palaces: Break → ambient recap haiku.
+Spark showers: Wit detect → "Gem!" firework + share button.
+Wellness weave: Word count milestones → "Hydrate?" + stretch vid.
+
+5.5 ACCESSIBILITY AURA [NEW]
+
+Voice-first: Dictate full scenes, emotion-infused.
+Dyslexia dance: Open fonts, color-coded elements.
+Multi-modal: Braille export, haptic feedback on beats.
+
+
+
+UI RULES (SENSUAL WRITING REALM)
+
+
+
+Infinite zen: Scroll-less canvas, story as horizon.
+Aura highlights: Line breathes with cursor; predictions as mist.
+Note nymphs: Inline bubbles, AI-summarize on tap.
+Palette poetry: Headings dawn-gold; dialogue ocean-blue; action earth-tone.
+Ghost gallery: Suggestions as fireflies—chase or ignore.
+Device devotion: Desktop sprawl, mobile intimacy, VR immersion.
+Mood mirror: Script tone tints UI (thriller: shadows; comedy: pops).
+haptic hum: Beats vibrate subtly on touch devices.
+
+
+
+ADVANCED AUTOMATION (SYMBIOTIC EVOLUTION)
+
+
+7.1 AUTO-PAGE MANAGEMENT (HARMONIC BALANCE)
+
+Break ballet: No widows; dialogue duos inseparable.
+Preview poetry: Thumbnail flips with "ideal shift?".
+Export elegance: PDF/FDX with contour graphs (pacing waves).
+
+7.2 CHARACTER FIRST APPEARANCE LOGIC (BIRTH RITUAL)
+
+Debut dazzle: Glow + card (traits, photo prompt).
+Cast constellation: Auto-chart relations, arc visuals.
+Recall radiance: "Where's Alice?" → spotlight jump.
+
+7.3 AUTO-DUAL-DIALOGUE MODE (CHORUS CONDUCTOR)
+
+Overlap oracle: Types sync → columns dance.
+Multi-voice: Stagger for choirs; "unison" merges.
+Visual vibe: Speech bubbles in edit mode.
+
+7.4 STORY HEALTH CHECKS (WISE COUNSELOR)
+
+Vitals: Dialogue/action ratio → "Voices rising?".
+Arc audit: Flat chars? "Depth dive?" traits gen.
+Export oracle: "Contest-ready: 95%" with tweaks.
+
+7.5 COLLABORATION WHISPERS (TRIBE HARMONIZER)
+
+Sync serenity: Real-time, conflict as "merge magic?".
+Role realms: "Director view?" highlights beats.
+Feedback flora: AI peer-review ("Strong hook!").
+
+7.6 REVISION RIVER (TIMELESS TWEAKING) [NEW]
+
+Version vines: Auto-branch edits, "what if?" previews.
+Undo odyssey: Infinite, with "journey map".
+Polish pass: "Enhance flow?" AI rewrite options.
+
+7.7 GLOBAL EXPORT & SHARING (WINGED DELIVERY)
+
+Formats feast: PDF, FDX, web-comic, audio-book.
+Share spells: "Collab link" or "pitch deck" auto-gen.
+Analytics aura: Read-aloud tests, engagement sims.
+
+
+END OF ULTIMATE ZERO-EFFORT LOGIC

@@ -25,6 +25,15 @@ C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.UI\obj\Debug\net
 C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.UI\obj\Debug\net8.0-windows\refint\App.UI.dll
 C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.UI\obj\Debug\net8.0-windows\App.UI.pdb
 C:\Users\prath\OneDrive\Desktop\programing\film writing\src\App.UI\obj\Debug\net8.0-windows\ref\App.UI.dll
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\bin\Debug\net8.0-windows\App.UI.deps.json
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\bin\Debug\net8.0-windows\App.UI.dll
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\bin\Debug\net8.0-windows\App.UI.pdb
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\bin\Debug\net8.0-windows\App.Core.dll
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\bin\Debug\net8.0-windows\App.Persistence.dll
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\bin\Debug\net8.0-windows\App.ViewModels.dll
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\bin\Debug\net8.0-windows\App.Core.pdb
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\bin\Debug\net8.0-windows\App.ViewModels.pdb
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\bin\Debug\net8.0-windows\App.Persistence.pdb
 C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\obj\Debug\net8.0-windows\App.UI.csproj.AssemblyReference.cache
 C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\obj\Debug\net8.0-windows\Resources.baml
 C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\obj\Debug\net8.0-windows\Themes\DarkTheme.baml
@@ -32,13 +41,6 @@ C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\obj\Debug\net8.0-windows\
 C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
 C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\obj\Debug\net8.0-windows\App.UI_MarkupCompile.cache
 C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\obj\Debug\net8.0-windows\App.UI_MarkupCompile.lref
-C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\bin\Debug\net8.0-windows\App.UI.deps.json
-C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\bin\Debug\net8.0-windows\App.UI.dll
-C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\bin\Debug\net8.0-windows\App.UI.pdb
-C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\bin\Debug\net8.0-windows\App.Core.dll
-C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\bin\Debug\net8.0-windows\App.ViewModels.dll
-C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\bin\Debug\net8.0-windows\App.Core.pdb
-C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\bin\Debug\net8.0-windows\App.ViewModels.pdb
 C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\obj\Debug\net8.0-windows\Themes\Corkboard.baml
 C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\obj\Debug\net8.0-windows\Themes\IndexCard.baml
 C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.UI\obj\Debug\net8.0-windows\Themes\ScriptEditor.baml

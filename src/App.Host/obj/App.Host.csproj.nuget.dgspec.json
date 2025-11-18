@@ -132,17 +132,9 @@
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
           "dependencies": {
-            "MahApps.Metro": {
+            "CommunityToolkit.Mvvm": {
               "target": "Package",
-              "version": "[2.4.11, )"
-            },
-            "MahApps.Metro.IconPacks": {
-              "target": "Package",
-              "version": "[4.11.0, )"
-            },
-            "Microsoft.Extensions.DependencyInjection": {
-              "target": "Package",
-              "version": "[8.0.0, )"
+              "version": "[8.2.2, )"
             }
           },
           "imports": [
@@ -304,10 +296,6 @@
             "CommunityToolkit.Mvvm": {
               "target": "Package",
               "version": "[8.2.2, )"
-            },
-            "MahApps.Metro": {
-              "target": "Package",
-              "version": "[2.4.10, )"
             }
           },
           "imports": [
@@ -363,6 +351,9 @@
             "projectReferences": {
               "C:\\Users\\prath\\OneDrive\\Desktop\\WriteToRoll\\src\\App.Core\\App.Core.csproj": {
                 "projectPath": "C:\\Users\\prath\\OneDrive\\Desktop\\WriteToRoll\\src\\App.Core\\App.Core.csproj"
+              },
+              "C:\\Users\\prath\\OneDrive\\Desktop\\WriteToRoll\\src\\App.Persistence\\App.Persistence.csproj": {
+                "projectPath": "C:\\Users\\prath\\OneDrive\\Desktop\\WriteToRoll\\src\\App.Persistence\\App.Persistence.csproj"
               }
             }
           }

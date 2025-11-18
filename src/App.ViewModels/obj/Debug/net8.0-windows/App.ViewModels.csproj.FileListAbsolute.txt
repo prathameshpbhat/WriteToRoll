@@ -17,7 +17,9 @@ C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.ViewModels\bin\Debug\net8.0-
 C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.ViewModels\bin\Debug\net8.0-windows\App.ViewModels.dll
 C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.ViewModels\bin\Debug\net8.0-windows\App.ViewModels.pdb
 C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.ViewModels\bin\Debug\net8.0-windows\App.Core.dll
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.ViewModels\bin\Debug\net8.0-windows\App.Persistence.dll
 C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.ViewModels\bin\Debug\net8.0-windows\App.Core.pdb
+C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.ViewModels\bin\Debug\net8.0-windows\App.Persistence.pdb
 C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.ViewModels\obj\Debug\net8.0-windows\App.ViewModels.csproj.AssemblyReference.cache
 C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.ViewModels\obj\Debug\net8.0-windows\App.ViewModels.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\prath\OneDrive\Desktop\WriteToRoll\src\App.ViewModels\obj\Debug\net8.0-windows\App.ViewModels.AssemblyInfoInputs.cache

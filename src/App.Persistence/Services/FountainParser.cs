@@ -145,22 +145,19 @@ namespace App.Persistence.Services
             return output.ToString();
         }
 
-        public (bool Success, string Message) ValidateFountain(string fountainText)
+        public bool ValidateFountain(string fountainText)
         {
             if (string.IsNullOrWhiteSpace(fountainText))
-                return (false, "Fountain text cannot be empty");
+                return false;
 
             try
             {
                 var script = ParseFountain(fountainText);
-                if (!script.Elements.Any())
-                    return (false, "No valid screenplay elements found");
-
-                return (true, "Fountain format is valid");
+                return script.Elements.Any();
             }
-            catch (Exception ex)
+            catch
             {
-                return (false, $"Validation error: {ex.Message}");
+                return false;
             }
         }
 

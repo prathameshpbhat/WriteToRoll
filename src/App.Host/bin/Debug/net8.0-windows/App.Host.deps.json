@@ -12,9 +12,7 @@
           "App.Persistence": "1.0.0",
           "App.UI": "1.0.0",
           "App.ViewModels": "1.0.0",
-          "MahApps.Metro": "2.4.11",
-          "MahApps.Metro.IconPacks": "4.11.0",
-          "Microsoft.Extensions.DependencyInjection": "8.0.0"
+          "CommunityToolkit.Mvvm": "8.2.2"
         },
         "runtime": {
           "App.Host.dll": {}
@@ -25,18 +23,6 @@
           "lib/net6.0/CommunityToolkit.Mvvm.dll": {
             "assemblyVersion": "8.2.0.0",
             "fileVersion": "8.2.2.1"
-          }
-        }
-      },
-      "ControlzEx/4.4.0": {
-        "dependencies": {
-          "Microsoft.Xaml.Behaviors.Wpf": "1.1.19",
-          "System.Text.Json": "9.0.0"
-        },
-        "runtime": {
-          "lib/netcoreapp3.1/ControlzEx.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.4.0.50"
           }
         }
       },
@@ -118,158 +104,6 @@
           "itext": "8.0.2"
         }
       },
-      "MahApps.Metro/2.4.11": {
-        "dependencies": {
-          "ControlzEx": "4.4.0"
-        },
-        "runtime": {
-          "lib/netcoreapp3.1/MahApps.Metro.dll": {
-            "assemblyVersion": "2.0.0.0",
-            "fileVersion": "2.4.11.0"
-          }
-        },
-        "resources": {
-          "lib/netcoreapp3.1/de/MahApps.Metro.resources.dll": {
-            "locale": "de"
-          }
-        }
-      },
-      "MahApps.Metro.IconPacks/4.11.0": {
-        "runtime": {
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.BootstrapIcons.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.BoxIcons.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.Codicons.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.Coolicons.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.Core.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.Entypo.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.EvaIcons.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.FeatherIcons.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.FileIcons.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.FontAwesome.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.Fontaudio.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.Fontisto.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.ForkAwesome.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.Ionicons.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.JamIcons.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.Material.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.MaterialDesign.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.MaterialLight.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.Microns.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.Modern.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.Octicons.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.PicolIcons.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.PixelartIcons.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.RPGAwesome.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.RadixIcons.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.RemixIcon.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.SimpleIcons.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.Typicons.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.Unicons.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.VaadinIcons.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.WeatherIcons.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.Zondicons.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          },
-          "lib/net5.0-windows7.0/MahApps.Metro.IconPacks.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.11.0.12"
-          }
-        }
-      },
       "Microsoft.DotNet.PlatformAbstractions/1.1.0": {
         "dependencies": {
           "System.AppContext": "4.1.0",
@@ -288,22 +122,22 @@
           }
         }
       },
-      "Microsoft.Extensions.DependencyInjection/8.0.0": {
+      "Microsoft.Extensions.DependencyInjection/5.0.0": {
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "5.0.0"
         },
         "runtime": {
-          "lib/net8.0/Microsoft.Extensions.DependencyInjection.dll": {
-            "assemblyVersion": "8.0.0.0",
-            "fileVersion": "8.0.23.53103"
+          "lib/net5.0/Microsoft.Extensions.DependencyInjection.dll": {
+            "assemblyVersion": "5.0.0.0",
+            "fileVersion": "5.0.20.51904"
           }
         }
       },
-      "Microsoft.Extensions.DependencyInjection.Abstractions/8.0.0": {
+      "Microsoft.Extensions.DependencyInjection.Abstractions/5.0.0": {
         "runtime": {
-          "lib/net8.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
-            "assemblyVersion": "8.0.0.0",
-            "fileVersion": "8.0.23.53103"
+          "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
+            "assemblyVersion": "5.0.0.0",
+            "fileVersion": "5.0.20.51904"
           }
         }
       },
@@ -324,8 +158,8 @@
       },
       "Microsoft.Extensions.Logging/5.0.0": {
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection": "8.0.0",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0",
+          "Microsoft.Extensions.DependencyInjection": "5.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "5.0.0",
           "Microsoft.Extensions.Logging.Abstractions": "5.0.0",
           "Microsoft.Extensions.Options": "5.0.0"
         },
@@ -346,7 +180,7 @@
       },
       "Microsoft.Extensions.Options/5.0.0": {
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "5.0.0",
           "Microsoft.Extensions.Primitives": "5.0.0"
         },
         "runtime": {
@@ -383,14 +217,6 @@
           "System.Runtime.Extensions": "4.3.0",
           "System.Runtime.Handles": "4.3.0",
           "System.Runtime.InteropServices": "4.3.0"
-        }
-      },
-      "Microsoft.Xaml.Behaviors.Wpf/1.1.19": {
-        "runtime": {
-          "lib/netcoreapp3.0/Microsoft.Xaml.Behaviors.dll": {
-            "assemblyVersion": "1.1.0.0",
-            "fileVersion": "1.1.19.35512"
-          }
         }
       },
       "Newtonsoft.Json/13.0.1": {
@@ -967,8 +793,7 @@
         "dependencies": {
           "App.Core": "1.0.0",
           "App.ViewModels": "1.0.0",
-          "CommunityToolkit.Mvvm": "8.2.2",
-          "MahApps.Metro": "2.4.11"
+          "CommunityToolkit.Mvvm": "8.2.2"
         },
         "runtime": {
           "App.UI.dll": {}
@@ -977,6 +802,7 @@
       "App.ViewModels/1.0.0": {
         "dependencies": {
           "App.Core": "1.0.0",
+          "App.Persistence": "1.0.0",
           "CommunityToolkit.Mvvm": "8.2.2"
         },
         "runtime": {
@@ -997,13 +823,6 @@
       "sha512": "sha512-r0g0k9tGYdrnz8R7T3x5UiokDffeevzK/2P/9SBL6fqLgN8B157MIi/bVUWI1KAz6ZorZrK9AdABCWUeXZZsvA==",
       "path": "communitytoolkit.mvvm/8.2.2",
       "hashPath": "communitytoolkit.mvvm.8.2.2.nupkg.sha512"
-    },
-    "ControlzEx/4.4.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-pZ5z4hYWwE4R13UMCVs6vII//nL7hz+Nwn4oJlnsZJRGqJNy6Z9KnJiTZfly6lKFu0pMc1aWBZpx+VqFTQKP1Q==",
-      "path": "controlzex/4.4.0",
-      "hashPath": "controlzex.4.4.0.nupkg.sha512"
     },
     "itext/8.0.2": {
       "type": "package",
@@ -1026,20 +845,6 @@
       "path": "itext7/8.0.2",
       "hashPath": "itext7.8.0.2.nupkg.sha512"
     },
-    "MahApps.Metro/2.4.11": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-pvk757N/ViZy+zlbB56AakryuZkts328M6pX2mMn/Z7r5ifkScDrS300zSBjLd+eGOPeHgUjH4f7cZbRiMyvQg==",
-      "path": "mahapps.metro/2.4.11",
-      "hashPath": "mahapps.metro.2.4.11.nupkg.sha512"
-    },
-    "MahApps.Metro.IconPacks/4.11.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-hanveh4ZZLYZ00ONrwjyzDJnekxWcgFQ7rHHrmC7GppO3js3tAEhmW+lo0rNgG4naxkggEYZFLeH+rxeJLMSuQ==",
-      "path": "mahapps.metro.iconpacks/4.11.0",
-      "hashPath": "mahapps.metro.iconpacks.4.11.0.nupkg.sha512"
-    },
     "Microsoft.DotNet.PlatformAbstractions/1.1.0": {
       "type": "package",
       "serviceable": true,
@@ -1047,19 +852,19 @@
       "path": "microsoft.dotnet.platformabstractions/1.1.0",
       "hashPath": "microsoft.dotnet.platformabstractions.1.1.0.nupkg.sha512"
     },
-    "Microsoft.Extensions.DependencyInjection/8.0.0": {
+    "Microsoft.Extensions.DependencyInjection/5.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-V8S3bsm50ig6JSyrbcJJ8bW2b9QLGouz+G1miK3UTaOWmMtFwNNNzUf4AleyDWUmTrWMLNnFSLEQtxmxgNQnNQ==",
-      "path": "microsoft.extensions.dependencyinjection/8.0.0",
-      "hashPath": "microsoft.extensions.dependencyinjection.8.0.0.nupkg.sha512"
+      "sha512": "sha512-Rc2kb/p3Ze6cP6rhFC3PJRdWGbLvSHZc0ev7YlyeU6FmHciDMLrhoVoTUEzKPhN5ZjFgKF1Cf5fOz8mCMIkvpA==",
+      "path": "microsoft.extensions.dependencyinjection/5.0.0",
+      "hashPath": "microsoft.extensions.dependencyinjection.5.0.0.nupkg.sha512"
     },
-    "Microsoft.Extensions.DependencyInjection.Abstractions/8.0.0": {
+    "Microsoft.Extensions.DependencyInjection.Abstractions/5.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-cjWrLkJXK0rs4zofsK4bSdg+jhDLTaxrkXu4gS6Y7MAlCvRyNNgwY/lJi5RDlQOnSZweHqoyvgvbdvQsRIW+hg==",
-      "path": "microsoft.extensions.dependencyinjection.abstractions/8.0.0",
-      "hashPath": "microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512"
+      "sha512": "sha512-ORj7Zh81gC69TyvmcUm9tSzytcy8AVousi+IVRAI8nLieQjOFryRusSFh7+aLk16FN9pQNqJAiMd7BTKINK0kA==",
+      "path": "microsoft.extensions.dependencyinjection.abstractions/5.0.0",
+      "hashPath": "microsoft.extensions.dependencyinjection.abstractions.5.0.0.nupkg.sha512"
     },
     "Microsoft.Extensions.DependencyModel/1.1.0": {
       "type": "package",
@@ -1123,13 +928,6 @@
       "sha512": "sha512-Lw1/VwLH1yxz6SfFEjVRCN0pnflLEsWgnV4qsdJ512/HhTwnKXUG+zDQ4yTO3K/EJQemGoNaBHX5InISNKTzUQ==",
       "path": "microsoft.win32.registry/4.3.0",
       "hashPath": "microsoft.win32.registry.4.3.0.nupkg.sha512"
-    },
-    "Microsoft.Xaml.Behaviors.Wpf/1.1.19": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-5sPWkbqImc2t1aQwIfJcKsUo7tOg1Tr8+6xVzZJB56Nzt4u9NlpcLofgdX/aRYpPKdWDA3U23Akw1KQzU5e82g==",
-      "path": "microsoft.xaml.behaviors.wpf/1.1.19",
-      "hashPath": "microsoft.xaml.behaviors.wpf.1.1.19.nupkg.sha512"
     },
     "Newtonsoft.Json/13.0.1": {
       "type": "package",

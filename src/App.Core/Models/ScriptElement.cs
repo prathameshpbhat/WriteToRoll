@@ -14,6 +14,46 @@ namespace App.Core.Models
         public bool IsUnderlined { get; set; }
         public string Alignment { get; set; } = "Left";
         public double LineHeight { get; set; } = 1.5;
+
+        public static FormattingMeta GetDefaults(ScriptElementType type)
+        {
+            return type switch
+            {
+                ScriptElementType.SceneHeading => new()
+                {
+                    LeftMargin = "1.5\"",
+                    RightMargin = "1.0\"",
+                    IsBold = true,
+                    Alignment = "Left"
+                },
+                ScriptElementType.Character => new()
+                {
+                    LeftMargin = "3.5\"",
+                    RightMargin = "1.0\"",
+                    Alignment = "Center",
+                    IsBold = true
+                },
+                ScriptElementType.Dialogue => new()
+                {
+                    LeftMargin = "2.5\"",
+                    RightMargin = "1.5\"",
+                    Alignment = "Left"
+                },
+                ScriptElementType.Parenthetical => new()
+                {
+                    LeftMargin = "3.0\"",
+                    RightMargin = "2.0\"",
+                    IsItalic = true
+                },
+                ScriptElementType.Transition => new()
+                {
+                    LeftMargin = "6.0\"",
+                    RightMargin = "1.0\"",
+                    Alignment = "Right"
+                },
+                _ => new()
+            };
+        }
     }
 
     public abstract class ScriptElement

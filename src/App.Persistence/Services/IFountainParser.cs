@@ -6,6 +6,6 @@ namespace App.Persistence.Services
     {
         Script ParseFountain(string fountainText);
         string ConvertToFountain(Script script);
-        (bool Success, string Message) ValidateFountain(string fountainText);
+        bool ValidateFountain(string fountainText);
     }
 }

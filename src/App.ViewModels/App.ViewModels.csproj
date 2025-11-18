@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\App.Core\App.Core.csproj" />
+    <ProjectReference Include="..\App.Persistence\App.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

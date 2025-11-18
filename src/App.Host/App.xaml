@@ -1,19 +1,7 @@
-﻿<Application x:Class="App.Host.AppEntryPoint"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<Application x:Class="ScriptWriter.App"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <!-- MahApps.Metro -->
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
-                
-                <!-- App.UI Resources -->
-                <ResourceDictionary Source="pack://application:,,,/App.UI;component/Resources.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/App.UI;component/Themes/ScriptEditor.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/App.UI;component/Themes/LightTheme.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
     </Application.Resources>
 </Application>
