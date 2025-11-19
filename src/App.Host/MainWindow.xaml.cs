@@ -12,13 +12,14 @@ namespace ScriptWriter
 {
     public partial class MainWindow : Window
     {
-        private readonly IScreenwritingLogic _logic;
-        private readonly AutoFormattingEngine _autoFormatter;
-        private readonly SmartIndentationEngine _indentation;
-        private readonly IFountainParser _fountainParser;
+        private IScreenwritingLogic _logic;
+        private AutoFormattingEngine _autoFormatter;
+        private SmartIndentationEngine _indentation;
+        private IFountainParser _fountainParser;
 
         private Script _currentScript;
         private bool _isUpdatingUI = false;
+        private List<string> _knownCharacters = new();
 
         public MainWindow()
         {
@@ -34,9 +35,12 @@ namespace ScriptWriter
 
                 Title = "ScriptWriter Pro - Untitled";
                 ScriptEditor.Focus();
-                StatusText.Text = "✓ Ready - Start typing!";
+                StatusText.Text = "✓ Ready";
                 CurrentElementText.Text = "📝 Action";
                 UpdateLineNumbers();
+
+                // Wire up auto-complete dropdown
+                AutoCompleteDropdown.ItemSelected += AutoCompleteDropdown_ItemSelected;
             }
             catch (Exception ex)
             {
@@ -63,41 +67,53 @@ namespace ScriptWriter
                 {
                     UpdateLineNumbers();
                     UpdateStatistics();
-                    ApplyDefaultMargins();
                     _isUpdatingUI = false;
                     return;
                 }
 
-                // Apply auto-formatting as user types
-                var formatResult = _autoFormatter.FormatAsYouType(trimmed);
-
-                if (formatResult.WasChanged)
+                // Skip auto-formatting for INT/EXT/FADE/CUT - let dropdown handle it
+                string upper = trimmed.ToUpperInvariant();
+                if (!(upper.StartsWith("INT") || upper.StartsWith("EXT") || 
+                      upper.Contains("FADE") || upper.Contains("CUT") || 
+                      upper.Contains("DISSOLVE") || upper.Contains("SMASH") || 
+                      upper.Contains("MATCH") || upper.Contains("WIPE") ||
+                      upper.Contains("IRIS") || upper.Contains("FLASH") || 
+                      upper.Contains("BACK") || upper.Contains("MONTAGE")))
                 {
-                    int lineStartIndex = GetCurrentLineStartIndex();
-                    int lineLength = GetCurrentLineLength();
+                    // Apply auto-formatting only for non-dropdown items
+                    var formatResult = _autoFormatter.FormatAsYouType(trimmed);
 
-                    if (lineLength > 0)
+                    if (formatResult.WasChanged)
                     {
-                        ScriptEditor.Select(lineStartIndex, lineLength);
-                        ScriptEditor.SelectedText = formatResult.FormattedText;
+                        int lineStartIndex = GetCurrentLineStartIndex();
+                        int lineLength = GetCurrentLineLength();
+
+                        if (lineLength > 0)
+                        {
+                            ScriptEditor.Select(lineStartIndex, lineLength);
+                            ScriptEditor.SelectedText = formatResult.FormattedText;
+                        }
+
+                        int newCaretIndex = lineStartIndex + formatResult.CaretPosition;
+                        ScriptEditor.CaretIndex = Math.Min(newCaretIndex, ScriptEditor.Text.Length);
+
+                        StatusText.Text = $"✓ {formatResult.FormattedText.Substring(0, Math.Min(40, formatResult.FormattedText.Length))}";
                     }
-
-                    int newCaretIndex = lineStartIndex + formatResult.CaretPosition;
-                    ScriptEditor.CaretIndex = Math.Min(newCaretIndex, ScriptEditor.Text.Length);
-
-                    // Apply margins visually
-                    ApplyMargins(formatResult.LeftMargin, formatResult.RightMargin);
-
-                    StatusText.Text = $"✓ Formatted: {formatResult.FormattedText.Substring(0, Math.Min(40, formatResult.FormattedText.Length))} | Left: {ConvertPixelsToInches(formatResult.LeftMargin)}\", Right: {ConvertPixelsToInches(formatResult.RightMargin)}\"";
-                }
-                else
-                {
-                    ApplyDefaultMargins();
                 }
 
                 UpdateElementTypeDisplay(trimmed);
                 UpdateLineNumbers();
                 UpdateStatistics();
+
+                // Show auto-complete dropdown while typing
+                if (!string.IsNullOrEmpty(trimmed) && trimmed.Length > 2)
+                {
+                    CheckAutoCompleteActivation(trimmed);
+                }
+                else
+                {
+                    AutoCompleteDropdown.Hide();
+                }
             }
             catch (Exception ex)
             {
@@ -106,6 +122,40 @@ namespace ScriptWriter
             finally
             {
                 _isUpdatingUI = false;
+            }
+        }
+
+        private void CheckAutoCompleteActivation(string currentLine)
+        {
+            var upper = currentLine.ToUpperInvariant();
+            
+            // Check if this is the first line (slugline/transition line)
+            int currentLineIndex = GetCurrentLineNumber();
+            bool isFirstLine = currentLineIndex == 1;
+            
+            // Only show slugline or transition suggestions on first line
+            if (!isFirstLine)
+            {
+                AutoCompleteDropdown.Hide();
+                return;
+            }
+
+            // Show slugline auto-complete for INT/EXT (check this first)
+            if ((upper.StartsWith("INT") || upper.StartsWith("EXT")) && currentLine.Length > 2)
+            {
+                AutoCompleteDropdown.ShowSluglineSuggestions(currentLine);
+            }
+            // Show transition auto-complete when user types transition keywords
+            else if ((upper.Contains("FADE") || upper.Contains("CUT") || upper.Contains("DISSOLVE") ||
+                 upper.Contains("SMASH") || upper.Contains("MATCH") || upper.Contains("WIPE") ||
+                 upper.Contains("IRIS") || upper.Contains("FLASH") || upper.Contains("BACK") ||
+                 upper.Contains("MONTAGE")) && currentLine.Length > 2)
+            {
+                AutoCompleteDropdown.ShowTransitionSuggestions(currentLine);
+            }
+            else
+            {
+                AutoCompleteDropdown.Hide();
             }
         }
 
@@ -147,20 +197,37 @@ namespace ScriptWriter
             return pixels / 100.0;
         }
 
-        /// <summary>
-        /// Handle Tab key - auto-indent
-        /// </summary>
         private void ScriptEditor_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Tab)
+            try
             {
-                HandleTabKey(e);
-                e.Handled = true;
+                // If dropdown is visible, pass arrow keys to it but keep focus on ScriptEditor
+                if (AutoCompleteDropdown.Visibility == Visibility.Visible && (e.Key == Key.Down || e.Key == Key.Up))
+                {
+                    // Handle arrow navigation without changing focus
+                    AutoCompleteDropdown.HandleArrowKey(e.Key);
+                    e.Handled = true;
+                    return;
+                }
+                
+                if (e.Key == Key.Tab)
+                {
+                    HandleTabKey(e);
+                    e.Handled = true;
+                }
+                else if (e.Key == Key.Return)
+                {
+                    HandleEnterKey(e);
+                    e.Handled = true;
+                }
+                else if (e.Key == Key.Escape)
+                {
+                    AutoCompleteDropdown.Hide();
+                }
             }
-            else if (e.Key == Key.Return)
+            catch (Exception ex)
             {
-                HandleEnterKey(e);
-                e.Handled = true;
+                StatusText.Text = $"Error: {ex.Message}";
             }
         }
 
@@ -211,6 +278,7 @@ namespace ScriptWriter
                     int caretIndex = ScriptEditor.CaretIndex;
                     ScriptEditor.Text = ScriptEditor.Text.Insert(caretIndex, Environment.NewLine);
                     ScriptEditor.CaretIndex = caretIndex + Environment.NewLine.Length;
+                    AutoCompleteDropdown.Hide();
                     return;
                 }
 
@@ -243,12 +311,106 @@ namespace ScriptWriter
                     ScriptEditor.CaretIndex += Environment.NewLine.Length;
                 }
 
-                StatusText.Text = $"✓ {GetElementDescription(detectResult.ElementType)}";
+                // Track character names
+                if (detectResult.ElementType == ScriptElementType.Character)
+                {
+                    var charName = currentLine.ToUpper();
+                    if (!_knownCharacters.Contains(charName))
+                    {
+                        _knownCharacters.Add(charName);
+                    }
+                }
+
+                StatusText.Text = $"✓ {detectResult.ElementType}";
+                AutoCompleteDropdown.Hide();
             }
             finally
             {
                 _isUpdatingUI = false;
             }
+        }
+
+        private void AutoCompleteDropdown_ItemSelected(string selectedItem)
+        {
+            try
+            {
+                _isUpdatingUI = true;
+                AutoCompleteDropdown.Hide();
+
+                int lineStartIndex = GetCurrentLineStartIndex();
+                int lineLength = GetCurrentLineLength();
+                string currentLine = GetCurrentLine();
+
+                // For time selection after dash (e.g., "INT. BEDROOM -" -> add "MORNING")
+                if (currentLine.Contains("-"))
+                {
+                    int dashIndex = currentLine.LastIndexOf("-");
+                    if (dashIndex >= 0)
+                    {
+                        // Keep everything before and including dash, append selected item
+                        string beforeDash = currentLine.Substring(0, dashIndex + 1).TrimEnd();
+                        string newLine = beforeDash + " " + selectedItem;
+                        
+                        // Replace entire line
+                        ScriptEditor.Select(lineStartIndex, lineLength);
+                        ScriptEditor.SelectedText = newLine;
+                        
+                        // Position cursor at end
+                        ScriptEditor.CaretIndex = lineStartIndex + newLine.Length;
+                        StatusText.Text = $"✓ {newLine}";
+                        return;
+                    }
+                }
+
+                // Normal case - replace entire line with selected item
+                // Check if current line already ends with what we're adding
+                string trimmedLine = currentLine.Trim();
+                string trimmedItem = selectedItem.Trim();
+                
+                // If current line is "INT" and we're selecting "INT." - replace it
+                // If current line is "INT." and we're selecting "INT." - don't add another dot
+                string finalText;
+                if (trimmedLine.EndsWith(".") && trimmedItem.StartsWith(trimmedLine))
+                {
+                    // Already has the dot, just use the selected item
+                    finalText = trimmedItem;
+                }
+                else if (trimmedLine == trimmedItem)
+                {
+                    // Exact match, use as is
+                    finalText = trimmedItem;
+                }
+                else if (trimmedLine.EndsWith(".") && trimmedItem.StartsWith(trimmedLine.TrimEnd('.')))
+                {
+                    // Line is "INT." and item is "INT. BEDROOM" - use item
+                    finalText = trimmedItem;
+                }
+                else
+                {
+                    // Use selected item as is
+                    finalText = trimmedItem;
+                }
+                
+                // Replace entire line
+                ScriptEditor.Select(lineStartIndex, lineLength);
+                ScriptEditor.SelectedText = finalText;
+                
+                // Position cursor at the END of the inserted text
+                int finalCaretPos = lineStartIndex + finalText.Length;
+                ScriptEditor.CaretIndex = finalCaretPos;
+                
+                StatusText.Text = $"✓ {finalText}";
+            }
+            finally
+            {
+                _isUpdatingUI = false;
+            }
+        }
+
+        private int FindTriggerStartIndex(string line)
+        {
+            // Not used anymore - keeping for reference only
+            return -1;
         }
 
         private void UpdateElementTypeDisplay(string currentLine)
@@ -313,6 +475,19 @@ namespace ScriptWriter
             catch { }
 
             return string.Empty;
+        }
+
+        private int GetCurrentLineNumber()
+        {
+            try
+            {
+                int caretIndex = ScriptEditor.CaretIndex;
+                int lineIndex = ScriptEditor.GetLineIndexFromCharacterIndex(caretIndex);
+                return lineIndex + 1;  // Return 1-based line number
+            }
+            catch { }
+
+            return 0;
         }
 
         private int GetCurrentLineStartIndex()
@@ -416,32 +591,24 @@ namespace ScriptWriter
         {
             if (ScriptEditor.Text.Length > 0)
             {
-                var result = MessageBox.Show("Create new script? Unsaved changes will be lost.", 
-                    "New Script", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result != MessageBoxResult.Yes)
-                    return;
+                var result = MessageBox.Show("Discard changes?", "New", MessageBoxButton.YesNo);
+                if (result != MessageBoxResult.Yes) return;
             }
 
             _currentScript = new Script();
             ScriptEditor.Clear();
-            Title = "ScriptWriter Pro - Untitled";
-            StatusText.Text = "✓ New script created!";
+            _knownCharacters.Clear();
+            StatusText.Text = "✓ New script";
         }
 
         private void Open_Click(object sender, RoutedEventArgs e)
         {
-            StatusText.Text = "Open function coming soon...";
+            StatusText.Text = "Coming soon...";
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            _currentScript.MarkModified();
-            StatusText.Text = "✓ Script saved!";
-        }
-
-        private void Exit_Click(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
+            StatusText.Text = "✓ Saved!";
         }
     }
 }
