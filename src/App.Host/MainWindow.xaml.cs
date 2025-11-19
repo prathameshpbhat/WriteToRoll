@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -13,11 +12,11 @@ namespace ScriptWriter
 {
     public partial class MainWindow : Window
     {
-        private readonly IScreenwritingLogic _screenwritingLogic;
+        private readonly IScreenwritingLogic _logic;
+        private readonly AutoFormattingEngine _autoFormatter;
+        private readonly SmartIndentationEngine _indentation;
         private readonly IFountainParser _fountainParser;
-        private readonly FormattingService _formattingService;
-        private readonly AutoFormattingService _autoFormattingService;
-        private readonly SmartIndentationService _indentationService;
+
         private Script _currentScript;
         private bool _isUpdatingUI = false;
 
@@ -27,144 +26,141 @@ namespace ScriptWriter
 
             try
             {
-                _screenwritingLogic = new ScreenwritingLogic();
+                _logic = new ScreenwritingLogic();
+                _autoFormatter = new AutoFormattingEngine(_logic);
+                _indentation = new SmartIndentationEngine();
                 _fountainParser = new FountainParser();
-                _formattingService = new FormattingService();
-                _indentationService = new SmartIndentationService();
-                _autoFormattingService = new AutoFormattingService(_formattingService, _screenwritingLogic);
                 _currentScript = new Script();
 
                 Title = "ScriptWriter Pro - Untitled";
                 ScriptEditor.Focus();
+                StatusText.Text = "✓ Ready - Start typing!";
+                CurrentElementText.Text = "📝 Action";
                 UpdateLineNumbers();
-                StatusText.Text = "Ready - Start typing! (Auto-formatting enabled)";
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Initialization error: {ex.Message}\n\n{ex.StackTrace}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error: {ex.Message}", "Initialization Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 Close();
             }
         }
 
+        /// <summary>
+        /// Main TextChanged event - triggers real-time auto-formatting with margins
+        /// </summary>
         private void ScriptEditor_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (_isUpdatingUI) return;
 
             try
             {
-                // Get current line and position
-                int caretIndex = ScriptEditor.CaretIndex;
+                _isUpdatingUI = true;
+
                 string currentLine = GetCurrentLine();
-                int lineStartIndex = GetCurrentLineStartIndex();
-                int caretLinePos = caretIndex - lineStartIndex;
+                string trimmed = currentLine.Trim();
 
-                // Trim the current line for analysis
-                string trimmedLine = currentLine.Trim();
-
-                // Only format if there's content
-                if (!string.IsNullOrWhiteSpace(trimmedLine))
+                if (string.IsNullOrWhiteSpace(trimmed))
                 {
-                    // Get previous element type for context
-                    var previousType = GetPreviousElementType();
-
-                    // Check for auto-formatting patterns
-                    var shouldFormat = CheckFormatPatterns(trimmedLine);
-
-                    if (shouldFormat)
-                    {
-                        // Get formatting result
-                        var formattingResult = _autoFormattingService.FormatAsYouType(trimmedLine, previousType, caretLinePos);
-
-                        // If formatting changed the text, update it
-                        if (formattingResult.WasChanged)
-                        {
-                            _isUpdatingUI = true;
-                            try
-                            {
-                                // Find the current line boundaries
-                                int lineLength = GetCurrentLineLength();
-
-                                // Select the entire line (without newline)
-                                ScriptEditor.Select(lineStartIndex, lineLength);
-
-                                // Replace with formatted text
-                                ScriptEditor.SelectedText = formattingResult.FormattedText;
-
-                                // Restore caret position
-                                int newCaretPos = lineStartIndex + formattingResult.CaretPosition;
-                                ScriptEditor.CaretIndex = Math.Min(newCaretPos, ScriptEditor.Text.Length);
-
-                                // Show what was formatted
-                                StatusText.Text = $"Auto-formatted: {formattingResult.FormattedText.Substring(0, Math.Min(30, formattingResult.FormattedText.Length))}...";
-                            }
-                            finally
-                            {
-                                _isUpdatingUI = false;
-                            }
-                        }
-                    }
+                    UpdateLineNumbers();
+                    UpdateStatistics();
+                    ApplyDefaultMargins();
+                    _isUpdatingUI = false;
+                    return;
                 }
 
-                // Update UI
+                // Apply auto-formatting as user types
+                var formatResult = _autoFormatter.FormatAsYouType(trimmed);
+
+                if (formatResult.WasChanged)
+                {
+                    int lineStartIndex = GetCurrentLineStartIndex();
+                    int lineLength = GetCurrentLineLength();
+
+                    if (lineLength > 0)
+                    {
+                        ScriptEditor.Select(lineStartIndex, lineLength);
+                        ScriptEditor.SelectedText = formatResult.FormattedText;
+                    }
+
+                    int newCaretIndex = lineStartIndex + formatResult.CaretPosition;
+                    ScriptEditor.CaretIndex = Math.Min(newCaretIndex, ScriptEditor.Text.Length);
+
+                    // Apply margins visually
+                    ApplyMargins(formatResult.LeftMargin, formatResult.RightMargin);
+
+                    StatusText.Text = $"✓ Formatted: {formatResult.FormattedText.Substring(0, Math.Min(40, formatResult.FormattedText.Length))} | Left: {ConvertPixelsToInches(formatResult.LeftMargin)}\", Right: {ConvertPixelsToInches(formatResult.RightMargin)}\"";
+                }
+                else
+                {
+                    ApplyDefaultMargins();
+                }
+
+                UpdateElementTypeDisplay(trimmed);
                 UpdateLineNumbers();
                 UpdateStatistics();
-                UpdateCurrentElementDisplay(currentLine);
             }
             catch (Exception ex)
             {
                 StatusText.Text = $"Error: {ex.Message}";
+            }
+            finally
+            {
+                _isUpdatingUI = false;
             }
         }
 
         /// <summary>
-        /// Check if the current line matches any auto-formatting patterns
+        /// Apply margin spacing to the editor
+        /// Uses TextBox padding to simulate proper screenplay margins
         /// </summary>
-        private bool CheckFormatPatterns(string trimmedLine)
-        {
-            var upper = trimmedLine.ToUpperInvariant();
-
-            // INT/EXT patterns
-            if (upper.Equals("INT") || upper.Equals("EXT")) return true;
-            if (upper.StartsWith("INT/") || upper.StartsWith("EXT/")) return true;
-
-            // Parenthetical patterns
-            if (trimmedLine.StartsWith("(") && !trimmedLine.EndsWith(")")) return true;
-
-            // Quote patterns
-            if (trimmedLine.StartsWith("\"") && !trimmedLine.EndsWith("\"")) return true;
-
-            // Centered text patterns
-            if (trimmedLine.StartsWith(">") && !trimmedLine.EndsWith("<")) return true;
-
-            // Transition patterns
-            if (upper.StartsWith("FADE IN") || upper.StartsWith("FADE OUT")) return true;
-            if (upper.StartsWith("CUT TO")) return true;
-
-            // Character modifier patterns
-            if (trimmedLine.Contains(" VO") || trimmedLine.Contains(" vo") || trimmedLine.Contains(" V O")) return true;
-            if (trimmedLine.Contains(" OS") || trimmedLine.Contains(" os") || trimmedLine.Contains(" O S")) return true;
-
-            return false;
-        }
-
-        private void ScriptEditor_PreviewKeyDown(object sender, KeyEventArgs e)
+        private void ApplyMargins(int leftMarginPixels, int rightMarginPixels)
         {
             try
             {
-                if (e.Key == Key.Tab)
-                {
-                    HandleTabKey(e);
-                    e.Handled = true;
-                }
-                else if (e.Key == Key.Return)
-                {
-                    HandleEnterKey(e);
-                    e.Handled = true;
-                }
+                // Convert to thickness for padding (WPF uses 1/96 DPI units by default)
+                // Assuming 100 pixels = 1 inch, scale appropriately for display
+                double leftPadding = (leftMarginPixels / 100.0) * 96;  // Convert to 96 DPI
+                double rightPadding = (rightMarginPixels / 100.0) * 96;
+
+                ScriptEditor.Padding = new Thickness(leftPadding, 5, rightPadding, 5);
             }
-            catch (Exception ex)
+            catch { }
+        }
+
+        /// <summary>
+        /// Apply default margins when line is empty
+        /// </summary>
+        private void ApplyDefaultMargins()
+        {
+            try
             {
-                StatusText.Text = $"Error: {ex.Message}";
+                ScriptEditor.Padding = new Thickness(15, 5, 10, 5);  // Default 1.5" left, 1.0" right
+            }
+            catch { }
+        }
+
+        /// <summary>
+        /// Convert pixel values back to inches for display
+        /// </summary>
+        private double ConvertPixelsToInches(int pixels)
+        {
+            return pixels / 100.0;
+        }
+
+        /// <summary>
+        /// Handle Tab key - auto-indent
+        /// </summary>
+        private void ScriptEditor_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Tab)
+            {
+                HandleTabKey(e);
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Return)
+            {
+                HandleEnterKey(e);
+                e.Handled = true;
             }
         }
 
@@ -174,26 +170,23 @@ namespace ScriptWriter
             {
                 _isUpdatingUI = true;
 
-                var currentLine = GetCurrentLine();
-                var trimmed = currentLine.Trim();
+                string currentLine = GetCurrentLine().Trim();
 
-                if (string.IsNullOrWhiteSpace(trimmed))
+                if (string.IsNullOrWhiteSpace(currentLine))
                 {
-                    // On empty line, apply smart indentation
                     var prevType = GetPreviousElementType();
-                    var indent = _indentationService.GetAutoIndentForNewLine(prevType);
+                    string autoIndent = _indentation.GetAutoIndentForNewLine(prevType);
 
-                    if (!string.IsNullOrEmpty(indent))
+                    if (!string.IsNullOrEmpty(autoIndent))
                     {
                         int caretIndex = ScriptEditor.CaretIndex;
-                        ScriptEditor.Text = ScriptEditor.Text.Insert(caretIndex, indent);
-                        ScriptEditor.CaretIndex = caretIndex + indent.Length;
-                        StatusText.Text = "Auto-indent applied";
+                        ScriptEditor.Text = ScriptEditor.Text.Insert(caretIndex, autoIndent);
+                        ScriptEditor.CaretIndex = caretIndex + autoIndent.Length;
+                        StatusText.Text = "✓ Auto-indent applied";
                     }
                 }
                 else
                 {
-                    // Insert regular tab
                     int caretIndex = ScriptEditor.CaretIndex;
                     ScriptEditor.Text = ScriptEditor.Text.Insert(caretIndex, "\t");
                     ScriptEditor.CaretIndex = caretIndex + 1;
@@ -211,60 +204,46 @@ namespace ScriptWriter
             {
                 _isUpdatingUI = true;
 
-                var currentLine = GetCurrentLine();
-                var trimmed = currentLine.Trim();
+                string currentLine = GetCurrentLine().Trim();
 
-                if (string.IsNullOrWhiteSpace(trimmed))
+                if (string.IsNullOrWhiteSpace(currentLine))
                 {
-                    // Empty line - just insert newline
                     int caretIndex = ScriptEditor.CaretIndex;
                     ScriptEditor.Text = ScriptEditor.Text.Insert(caretIndex, Environment.NewLine);
                     ScriptEditor.CaretIndex = caretIndex + Environment.NewLine.Length;
                     return;
                 }
 
-                // Get context
                 var previousType = GetPreviousElementType();
-                var context = new ScriptContext(previousType, true);
+                var formatResult = _autoFormatter.FormatOnEnter(currentLine, previousType);
 
-                // Detect element type
-                var result = _screenwritingLogic.DetectAndNormalize(trimmed, context);
-
-                // Format the line
-                var formattingResult = _autoFormattingService.FormatOnBlockEnd(trimmed, previousType);
-
-                // Replace current line with formatted version
                 int lineStartIndex = GetCurrentLineStartIndex();
                 int lineLength = GetCurrentLineLength();
-                ScriptEditor.Select(lineStartIndex, lineLength);
-                ScriptEditor.SelectedText = formattingResult.FormattedText;
 
-                // Move caret to end of formatted line
-                int caretPos = lineStartIndex + formattingResult.FormattedText.Length;
+                if (lineLength > 0)
+                {
+                    ScriptEditor.Select(lineStartIndex, lineLength);
+                    ScriptEditor.SelectedText = formatResult.FormattedText;
+                }
+
+                int caretPos = lineStartIndex + formatResult.FormattedText.Length;
                 ScriptEditor.CaretIndex = caretPos;
 
-                // Insert newline
                 ScriptEditor.Text = ScriptEditor.Text.Insert(caretPos, Environment.NewLine);
                 ScriptEditor.CaretIndex = caretPos + Environment.NewLine.Length;
 
-                // Add blank line after certain elements
-                if (result.ElementType == ScriptElementType.SceneHeading ||
-                    result.ElementType == ScriptElementType.Action ||
-                    result.ElementType == ScriptElementType.Transition)
+                var context = new ScriptContext(previousType, true);
+                var detectResult = _logic.DetectAndNormalize(currentLine, context);
+
+                if (detectResult.ElementType == ScriptElementType.SceneHeading ||
+                    detectResult.ElementType == ScriptElementType.Action ||
+                    detectResult.ElementType == ScriptElementType.Transition)
                 {
                     ScriptEditor.Text = ScriptEditor.Text.Insert(ScriptEditor.CaretIndex, Environment.NewLine);
                     ScriptEditor.CaretIndex += Environment.NewLine.Length;
                 }
 
-                // Auto-indent next line
-                if (result.ElementType == ScriptElementType.SceneHeading)
-                {
-                    var actionIndent = _indentationService.GetIndentationString(ScriptElementType.Action);
-                    ScriptEditor.Text = ScriptEditor.Text.Insert(ScriptEditor.CaretIndex, actionIndent);
-                    ScriptEditor.CaretIndex += actionIndent.Length;
-                }
-
-                StatusText.Text = $"{result.ElementType} - {GetElementDescription(result.ElementType)}";
+                StatusText.Text = $"✓ {GetElementDescription(detectResult.ElementType)}";
             }
             finally
             {
@@ -272,38 +251,49 @@ namespace ScriptWriter
             }
         }
 
+        private void UpdateElementTypeDisplay(string currentLine)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(currentLine))
+                {
+                    CurrentElementText.Text = "📝 (empty)";
+                    return;
+                }
+
+                var context = new ScriptContext(GetPreviousElementType(), false);
+                var result = _logic.DetectAndNormalize(currentLine, context);
+                CurrentElementText.Text = GetElementDescription(result.ElementType);
+            }
+            catch { }
+        }
+
+        private string GetElementDescription(ScriptElementType type)
+        {
+            return type switch
+            {
+                ScriptElementType.SceneHeading => "📍 Scene Heading",
+                ScriptElementType.Action => "📝 Action",
+                ScriptElementType.Character => "👤 Character",
+                ScriptElementType.Dialogue => "💬 Dialogue",
+                ScriptElementType.Parenthetical => "🗨️ Parenthetical",
+                ScriptElementType.Transition => "➡️ Transition",
+                ScriptElementType.Shot => "📷 Shot",
+                ScriptElementType.CenteredText => "🎬 Centered",
+                _ => type.ToString()
+            };
+        }
+
         private void ScriptEditor_SelectionChanged(object sender, RoutedEventArgs e)
         {
             try
             {
-                int caretIndex = ScriptEditor.CaretIndex;
-                int lineNumber = ScriptEditor.GetLineIndexFromCharacterIndex(caretIndex) + 1;
+                int lineNumber = ScriptEditor.GetLineIndexFromCharacterIndex(ScriptEditor.CaretIndex) + 1;
                 int lineStartIndex = ScriptEditor.GetCharacterIndexFromLineIndex(lineNumber - 1);
-                int columnNumber = caretIndex - lineStartIndex + 1;
-
+                int columnNumber = ScriptEditor.CaretIndex - lineStartIndex + 1;
                 CaretPosText.Text = $"Ln {lineNumber}, Col {columnNumber}";
             }
-            catch
-            {
-                // Silently ignore
-            }
-        }
-
-        private void UpdateCurrentElementDisplay(string currentLine)
-        {
-            try
-            {
-                if (!string.IsNullOrWhiteSpace(currentLine))
-                {
-                    var context = new ScriptContext(GetPreviousElementType(), false);
-                    var result = _screenwritingLogic.DetectAndNormalize(currentLine.Trim(), context);
-                    CurrentElementText.Text = result.ElementType.ToString();
-                }
-            }
-            catch
-            {
-                // Silently ignore
-            }
+            catch { }
         }
 
         private string GetCurrentLine()
@@ -357,7 +347,6 @@ namespace ScriptWriter
             {
                 int currentLineIndex = ScriptEditor.GetLineIndexFromCharacterIndex(ScriptEditor.CaretIndex);
 
-                // Search backwards for last non-empty line
                 for (int i = currentLineIndex - 1; i >= 0; i--)
                 {
                     int lineStart = ScriptEditor.GetCharacterIndexFromLineIndex(i);
@@ -369,7 +358,7 @@ namespace ScriptWriter
                         if (!string.IsNullOrWhiteSpace(line))
                         {
                             var context = new ScriptContext(null, false);
-                            var result = _screenwritingLogic.DetectAndNormalize(line, context);
+                            var result = _logic.DetectAndNormalize(line, context);
                             return result.ElementType;
                         }
                     }
@@ -380,35 +369,19 @@ namespace ScriptWriter
             return null;
         }
 
-        private void ReplaceCurrentLine(string newText)
-        {
-            try
-            {
-                int lineStartIndex = GetCurrentLineStartIndex();
-                int lineLength = GetCurrentLineLength();
-
-                if (lineLength > 0)
-                {
-                    ScriptEditor.Select(lineStartIndex, lineLength);
-                    ScriptEditor.SelectedText = newText;
-                }
-            }
-            catch { }
-        }
-
         private void UpdateLineNumbers()
         {
             try
             {
                 int lineCount = ScriptEditor.LineCount;
-                var lineNumbers = new List<string>();
+                var lines = new List<string>();
 
                 for (int i = 1; i <= lineCount; i++)
                 {
-                    lineNumbers.Add(i.ToString());
+                    lines.Add(i.ToString());
                 }
 
-                LineNumbers.Text = string.Join(Environment.NewLine, lineNumbers);
+                LineNumbers.Text = string.Join(Environment.NewLine, lines);
             }
             catch { }
         }
@@ -420,7 +393,6 @@ namespace ScriptWriter
                 var lines = ScriptEditor.Text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
                 int elementCount = 0;
                 int wordCount = 0;
-                int pageCount = 1;
 
                 foreach (var line in lines)
                 {
@@ -431,7 +403,7 @@ namespace ScriptWriter
                     }
                 }
 
-                pageCount = Math.Max(1, (elementCount / 55) + 1);
+                int pageCount = Math.Max(1, (elementCount / 55) + 1);
 
                 ElementCountText.Text = $"Elements: {elementCount}";
                 WordCountText.Text = $"Words: {wordCount}";
@@ -440,27 +412,11 @@ namespace ScriptWriter
             catch { }
         }
 
-        private string GetElementDescription(ScriptElementType type)
-        {
-            return type switch
-            {
-                ScriptElementType.SceneHeading => "Scene Heading (INT./EXT.)",
-                ScriptElementType.Action => "Action/Narrative",
-                ScriptElementType.Character => "Character Name",
-                ScriptElementType.Dialogue => "Dialogue",
-                ScriptElementType.Parenthetical => "Parenthetical (beat/pause)",
-                ScriptElementType.Transition => "Transition (CUT TO:, FADE OUT:, etc.)",
-                ScriptElementType.Shot => "Shot Description",
-                ScriptElementType.CenteredText => "Centered Text",
-                _ => type.ToString()
-            };
-        }
-
         private void New_Click(object sender, RoutedEventArgs e)
         {
             if (ScriptEditor.Text.Length > 0)
             {
-                var result = MessageBox.Show("Create new script? Any unsaved changes will be lost.", 
+                var result = MessageBox.Show("Create new script? Unsaved changes will be lost.", 
                     "New Script", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result != MessageBoxResult.Yes)
                     return;
@@ -469,19 +425,18 @@ namespace ScriptWriter
             _currentScript = new Script();
             ScriptEditor.Clear();
             Title = "ScriptWriter Pro - Untitled";
-            StatusText.Text = "New script created - Start typing!";
-            UpdateLineNumbers();
+            StatusText.Text = "✓ New script created!";
         }
 
         private void Open_Click(object sender, RoutedEventArgs e)
         {
-            StatusText.Text = "Open functionality coming soon...";
+            StatusText.Text = "Open function coming soon...";
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
             _currentScript.MarkModified();
-            StatusText.Text = "Script saved!";
+            StatusText.Text = "✓ Script saved!";
         }
 
         private void Exit_Click(object sender, RoutedEventArgs e)
