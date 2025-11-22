@@ -28,26 +28,26 @@ namespace App.Core.Services
 
             var trimmed = input.Trim();
 
-            // SCENE HEADINGS: 1.5" left, 1.0" right
+            // SCENE HEADINGS: 1.0" left, 1.0" right
             if (input.Equals("INT", StringComparison.OrdinalIgnoreCase))
-                return new AutoFormatResult("INT. ", 5, true, ConvertInchesToPixels(1.5), ConvertInchesToPixels(1.0));
+                return new AutoFormatResult("INT. ", 5, true, ConvertInchesToPixels(1.0), ConvertInchesToPixels(1.0));
 
             if (input.Equals("EXT", StringComparison.OrdinalIgnoreCase))
-                return new AutoFormatResult("EXT. ", 5, true, ConvertInchesToPixels(1.5), ConvertInchesToPixels(1.0));
+                return new AutoFormatResult("EXT. ", 5, true, ConvertInchesToPixels(1.0), ConvertInchesToPixels(1.0));
 
             if (input.Equals("INT/", StringComparison.OrdinalIgnoreCase))
-                return new AutoFormatResult("INT./EXT. ", 10, true, ConvertInchesToPixels(1.5), ConvertInchesToPixels(1.0));
+                return new AutoFormatResult("INT./EXT. ", 10, true, ConvertInchesToPixels(1.0), ConvertInchesToPixels(1.0));
 
             if (input.Equals("EXT/", StringComparison.OrdinalIgnoreCase))
-                return new AutoFormatResult("EXT./INT. ", 10, true, ConvertInchesToPixels(1.5), ConvertInchesToPixels(1.0));
+                return new AutoFormatResult("EXT./INT. ", 10, true, ConvertInchesToPixels(1.0), ConvertInchesToPixels(1.0));
 
-            // PARENTHETICAL: 3.0" left, 2.0" right
+            // PARENTHETICAL: 3.1" left, 2.4" right
             if (input.StartsWith("(") && !input.EndsWith(")") && input.Length > 1)
-                return new AutoFormatResult(input + ")", input.Length, true, ConvertInchesToPixels(3.0), ConvertInchesToPixels(2.0));
+                return new AutoFormatResult(input + ")", input.Length, true, ConvertInchesToPixels(3.1), ConvertInchesToPixels(2.4));
 
-            // QUOTED TEXT: 2.5" left, 1.5" right
+            // QUOTED TEXT: reuse dialogue margins 2.5" both sides
             if (input.StartsWith("\"") && !input.EndsWith("\"") && input.Length > 1)
-                return new AutoFormatResult(input + "\"", input.Length, true, ConvertInchesToPixels(2.5), ConvertInchesToPixels(1.5));
+                return new AutoFormatResult(input + "\"", input.Length, true, ConvertInchesToPixels(2.5), ConvertInchesToPixels(2.5));
 
             // CENTERED TEXT: 2.5" both sides (equal margins = centered)
             if (input.StartsWith(">") && !input.EndsWith("<") && input.Length > 1)
@@ -63,10 +63,10 @@ namespace App.Core.Services
             if (Regex.IsMatch(input, @"^DISSOLVE\s+TO$", RegexOptions.IgnoreCase) && !input.EndsWith(":"))
                 return new AutoFormatResult(input.ToUpper() + ":", input.Length, true, ConvertInchesToPixels(6.0), ConvertInchesToPixels(1.0));
 
-            // CHARACTER MODIFIERS: 3.5" left, 1.0" right
+            // CHARACTER MODIFIERS: align to character block 3.7" left, 1.0" right
             var normalized = NormalizeCharacterModifiers(input);
             if (normalized != input)
-                return new AutoFormatResult(normalized, normalized.Length, true, ConvertInchesToPixels(3.5), ConvertInchesToPixels(1.0));
+                return new AutoFormatResult(normalized, normalized.Length, true, ConvertInchesToPixels(3.7), ConvertInchesToPixels(1.0));
 
             return new AutoFormatResult(input, input.Length, false);
         }
@@ -91,12 +91,13 @@ namespace App.Core.Services
             var context = new ScriptContext(previousType, true);
             var result = _logic.DetectAndNormalize(input.Trim(), context);
 
-            // Get margins for the detected element type
+            var profile = ScreenplayElementProfiles.GetProfile(result.ElementType);
+            var normalizedText = ApplyCaseStyle(result.Text, profile.CaseStyle);
             var (leftMargin, rightMargin) = GetMarginsForElementType(result.ElementType);
 
             return new AutoFormatResult(
-                result.Text,
-                result.Text.Length,
+                normalizedText,
+                normalizedText.Length,
                 result.TextWasChanged,
                 leftMargin,
                 rightMargin
@@ -109,18 +110,10 @@ namespace App.Core.Services
         /// </summary>
         private (int leftMargin, int rightMargin) GetMarginsForElementType(ScriptElementType type)
         {
-            return type switch
-            {
-                ScriptElementType.SceneHeading => (ConvertInchesToPixels(1.5), ConvertInchesToPixels(1.0)),   // INT/EXT
-                ScriptElementType.Action => (ConvertInchesToPixels(1.5), ConvertInchesToPixels(1.0)),
-                ScriptElementType.Character => (ConvertInchesToPixels(3.5), ConvertInchesToPixels(1.0)),      // Centered
-                ScriptElementType.Dialogue => (ConvertInchesToPixels(2.5), ConvertInchesToPixels(1.5)),
-                ScriptElementType.Parenthetical => (ConvertInchesToPixels(3.0), ConvertInchesToPixels(2.0)),
-                ScriptElementType.Transition => (ConvertInchesToPixels(6.0), ConvertInchesToPixels(1.0)),     // Right-aligned
-                ScriptElementType.Shot => (ConvertInchesToPixels(1.5), ConvertInchesToPixels(1.0)),
-                ScriptElementType.CenteredText => (ConvertInchesToPixels(2.5), ConvertInchesToPixels(2.5)),   // Equal = centered
-                _ => (ConvertInchesToPixels(1.5), ConvertInchesToPixels(1.0))
-            };
+            var profile = ScreenplayElementProfiles.GetProfile(type);
+            return (
+                ConvertInchesToPixels(profile.LeftMarginInches),
+                ConvertInchesToPixels(profile.RightMarginInches));
         }
 
         /// <summary>
@@ -147,6 +140,26 @@ namespace App.Core.Services
             upper = Regex.Replace(upper, @"\s+(OC|O\.C|O C)(?=\s|$)", " O.C.", RegexOptions.IgnoreCase);
 
             return upper != input.ToUpperInvariant() ? upper : input;
+        }
+
+        private string ApplyCaseStyle(string text, ElementCaseStyle caseStyle)
+        {
+            return caseStyle switch
+            {
+                ElementCaseStyle.Uppercase => text.ToUpperInvariant(),
+                ElementCaseStyle.Lowercase => text.ToLowerInvariant(),
+                ElementCaseStyle.Sentence => ToSentenceCase(text),
+                _ => text
+            };
+        }
+
+        private static string ToSentenceCase(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return input;
+
+            var trimmed = input.Trim();
+            return char.ToUpperInvariant(trimmed[0]) + (trimmed.Length > 1 ? trimmed.Substring(1) : string.Empty);
         }
     }
 

@@ -12,8 +12,12 @@ namespace App.Core.Services
     public class ScreenwritingLogic : IScreenwritingLogic
     {
         // Regex patterns per Screenwriting_Software_Notes_Final.txt spec
+        private const string SceneHeadingPattern =
+            @"^\s*(INT\.?/EXT\.?|EXT\.?/INT\.?|INT\.?|EXT\.?)" +
+            @"(?=[\s./\-\)]|$)";
+
         private static readonly Regex SceneHeadingRegex = new(
-            @"^\s*(INT|EXT|INT\.?/EXT\.?|EXT\.?/INT\.?)(?=[\s./\-\)]|$)",
+            SceneHeadingPattern,
             RegexOptions.IgnoreCase | RegexOptions.Compiled
         );
         

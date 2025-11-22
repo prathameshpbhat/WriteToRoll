@@ -1,105 +1,90 @@
-# Build results
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
-x64/
-x86/
-[Ww][Ii][Nn]32/
-[Aa][Rr][Mm]/
-[Aa][Rr][Mm]64/
-bld/
+## Build output
 [Bb]in/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+publish/
+artifacts/
 
-# Visual Studio cache/options directory
+## Platform specific binaries
+[Dd]ebug*/
+[Rr]elease*/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+
+## IDE metadata
 .vs/
-
-# Visual Studio Code
 .vscode/
 *.code-workspace
-
-# Resharper is a .NET coding add-in
-_ReSharper*/
-*.[Rr]e[Ss]harper
-*.DotSettings.user
-
-# JetBrains Rider
 .idea/
 *.sln.iml
 
-# Build folder
-!.gitkeep
-*.dlls
-*.exe
-*.pdb
-
-# User-specific files
+## User-specific files
 *.rsuser
 *.suo
 *.user
 *.userosscache
 *.sln.docstates
+*.DotSettings.user
 
-# Build Artifacts
-*.o
-*.a
-*.so
-*.dylib
-*.dll
-*.exe
-*.out
-*.app
-
-# NuGet
+## NuGet
 *.nupkg
 *.snupkg
 **/packages/
 .nuget/
 
-# Test Results
+## Test artifacts
 TestResults/
 *.trx
-*.coverage
+*.coverage*
 
-# Local user settings
-launchSettings.json
-
-# Mac files
-.DS_Store
-*.swp
-*~
-
-# Temporary files
+## Temporary/system files
 *.tmp
 *.temp
 *.bak
 *.backup
+*.swp
 *~
+.DS_Store
 
-# Node modules (if using any node tools)
-node_modules/
-npm-debug.log
-
-# Environment variables
-.env
-.env.local
-.env.*.local
-
-# IDE files
+## Tooling caches
+_ReSharper*/
+*.[Rr]e[Ss]harper
 *.IDE.json
-.vscode/launch.json
 
-# Output files
-*.log
+## Node / web tooling
+node_modules/
+npm-debug.log*
 
-# Database files
+## Environment configuration
+.env*
+
+## Build-time generated payloads
+*.dll
+*.exe
+*.pdb
+*.appx
+*.appxbundle
+*.appxupload
+*.msix
+*.msixbundle
+*.msixupload
+*.deps.json
+*.runtimeconfig.json
+*.app
+
+## Packaging and publish folders
+BundleArtifacts/
+AppPackages/
+LogFiles/
+
+## Database / data files
 *.db
-*.sqlite
-*.sqlite3
+*.sqlite*
 
-# Misc
+## Miscellaneous
+launchSettings.json
 .AppleDouble
 .LSOverride

@@ -23,6 +23,7 @@
                          BorderThickness="0"
                          MaxHeight="250"
                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         PreviewMouseLeftButtonUp="ResultsList_PreviewMouseLeftButtonUp"
                          MouseDoubleClick="ResultsList_MouseDoubleClick"
                          PreviewKeyDown="ResultsList_KeyDown">
                     <ListBox.ItemTemplate>

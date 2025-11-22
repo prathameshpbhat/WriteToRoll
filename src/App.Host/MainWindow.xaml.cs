@@ -15,11 +15,15 @@ namespace ScriptWriter
         private IScreenwritingLogic _logic;
         private AutoFormattingEngine _autoFormatter;
         private SmartIndentationEngine _indentation;
+        private SmartIndentationService _indentationService;
+        private ScreenplayStructureAdvisor _structureAdvisor;
         private IFountainParser _fountainParser;
 
         private Script _currentScript;
         private bool _isUpdatingUI = false;
         private List<string> _knownCharacters = new();
+        private ScriptElementType? _activeElementType;
+        private int _autoCompleteAnchorIndex = -1;
 
         public MainWindow()
         {
@@ -30,14 +34,19 @@ namespace ScriptWriter
                 _logic = new ScreenwritingLogic();
                 _autoFormatter = new AutoFormattingEngine(_logic);
                 _indentation = new SmartIndentationEngine();
+                _indentationService = new SmartIndentationService();
+                _structureAdvisor = new ScreenplayStructureAdvisor();
                 _fountainParser = new FountainParser();
                 _currentScript = new Script();
+                _activeElementType = ScriptElementType.Action;
 
                 Title = "ScriptWriter Pro - Untitled";
                 ScriptEditor.Focus();
                 StatusText.Text = "✓ Ready";
                 CurrentElementText.Text = "📝 Action";
+                NextElementText.Text = "Next: Action";
                 UpdateLineNumbers();
+                UpdateNextElementHint(ScriptElementType.Action);
 
                 // Wire up auto-complete dropdown
                 AutoCompleteDropdown.ItemSelected += AutoCompleteDropdown_ItemSelected;
@@ -67,6 +76,8 @@ namespace ScriptWriter
                 {
                     UpdateLineNumbers();
                     UpdateStatistics();
+                    _activeElementType = ScriptElementType.Action;
+                    UpdateNextElementHint(ScriptElementType.Action);
                     _isUpdatingUI = false;
                     return;
                 }
@@ -106,13 +117,13 @@ namespace ScriptWriter
                 UpdateStatistics();
 
                 // Show auto-complete dropdown while typing
-                if (!string.IsNullOrEmpty(trimmed) && trimmed.Length > 2)
+                if (!string.IsNullOrEmpty(trimmed))
                 {
                     CheckAutoCompleteActivation(trimmed);
                 }
                 else
                 {
-                    AutoCompleteDropdown.Hide();
+                    HideAutoCompleteDropdown();
                 }
             }
             catch (Exception ex)
@@ -125,38 +136,88 @@ namespace ScriptWriter
             }
         }
 
+        private void BeginAutoCompleteSession(int? forcedAnchorIndex = null)
+        {
+            int current = forcedAnchorIndex ?? ScriptEditor.CaretIndex;
+            _autoCompleteAnchorIndex = Math.Max(0, Math.Min(current, ScriptEditor.Text.Length));
+        }
+
+        private void HideAutoCompleteDropdown()
+        {
+            AutoCompleteDropdown.Hide();
+            _autoCompleteAnchorIndex = -1;
+        }
+
+        private static readonly string[] TransitionKeywords = new[]
+        {
+            "FADE",
+            "CUT",
+            "DISSOLVE",
+            "SMASH",
+            "MATCH",
+            "WIPE",
+            "IRIS",
+            "FLASH",
+            "BACK",
+            "MONTAGE"
+        };
+
         private void CheckAutoCompleteActivation(string currentLine)
         {
-            var upper = currentLine.ToUpperInvariant();
-            
-            // Check if this is the first line (slugline/transition line)
-            int currentLineIndex = GetCurrentLineNumber();
-            bool isFirstLine = currentLineIndex == 1;
-            
-            // Only show slugline or transition suggestions on first line
-            if (!isFirstLine)
+            var trimmed = currentLine.Trim();
+            if (string.IsNullOrEmpty(trimmed))
             {
-                AutoCompleteDropdown.Hide();
+                HideAutoCompleteDropdown();
                 return;
             }
 
-            // Show slugline auto-complete for INT/EXT (check this first)
-            if ((upper.StartsWith("INT") || upper.StartsWith("EXT")) && currentLine.Length > 2)
+            if (IsSluglineTrigger(trimmed))
             {
+                BeginAutoCompleteSession(GetCurrentLineStartIndex());
                 AutoCompleteDropdown.ShowSluglineSuggestions(currentLine);
+                return;
             }
-            // Show transition auto-complete when user types transition keywords
-            else if ((upper.Contains("FADE") || upper.Contains("CUT") || upper.Contains("DISSOLVE") ||
-                 upper.Contains("SMASH") || upper.Contains("MATCH") || upper.Contains("WIPE") ||
-                 upper.Contains("IRIS") || upper.Contains("FLASH") || upper.Contains("BACK") ||
-                 upper.Contains("MONTAGE")) && currentLine.Length > 2)
+
+            var previousType = GetPreviousElementType();
+            var context = new ScriptContext(previousType, false);
+            var detection = _logic.DetectAndNormalize(trimmed, context);
+
+            switch (detection.ElementType)
             {
+                case ScriptElementType.SceneHeading:
+                    BeginAutoCompleteSession(GetCurrentLineStartIndex());
+                    AutoCompleteDropdown.ShowSluglineSuggestions(currentLine);
+                    return;
+                case ScriptElementType.Transition:
+                    BeginAutoCompleteSession(GetCurrentLineStartIndex());
+                    AutoCompleteDropdown.ShowTransitionSuggestions(currentLine);
+                    return;
+                case ScriptElementType.Character:
+                    if (_knownCharacters.Count > 0)
+                    {
+                        BeginAutoCompleteSession(GetCurrentLineStartIndex());
+                        AutoCompleteDropdown.ShowCharacterSuggestions(trimmed, _knownCharacters);
+                    }
+                    else
+                    {
+                        HideAutoCompleteDropdown();
+                    }
+                    return;
+                case ScriptElementType.Parenthetical:
+                    BeginAutoCompleteSession(GetCurrentLineStartIndex());
+                    AutoCompleteDropdown.ShowParentheticalSuggestions(trimmed);
+                    return;
+            }
+
+            var upper = trimmed.ToUpperInvariant();
+            if (TransitionKeywords.Any(token => upper.Contains(token)))
+            {
+                BeginAutoCompleteSession(GetCurrentLineStartIndex());
                 AutoCompleteDropdown.ShowTransitionSuggestions(currentLine);
+                return;
             }
-            else
-            {
-                AutoCompleteDropdown.Hide();
-            }
+
+            HideAutoCompleteDropdown();
         }
 
         /// <summary>
@@ -201,13 +262,22 @@ namespace ScriptWriter
         {
             try
             {
-                // If dropdown is visible, pass arrow keys to it but keep focus on ScriptEditor
-                if (AutoCompleteDropdown.Visibility == Visibility.Visible && (e.Key == Key.Down || e.Key == Key.Up))
+                bool dropdownVisible = AutoCompleteDropdown.Visibility == Visibility.Visible;
+
+                if (dropdownVisible && (e.Key == Key.Down || e.Key == Key.Up))
                 {
-                    // Handle arrow navigation without changing focus
                     AutoCompleteDropdown.HandleArrowKey(e.Key);
                     e.Handled = true;
                     return;
+                }
+
+                if (dropdownVisible && (e.Key == Key.Return || e.Key == Key.Tab))
+                {
+                    if (AutoCompleteDropdown.TryCommitSelection() && e.Key == Key.Tab)
+                    {
+                        e.Handled = true;
+                        return;
+                    }
                 }
                 
                 if (e.Key == Key.Tab)
@@ -222,7 +292,8 @@ namespace ScriptWriter
                 }
                 else if (e.Key == Key.Escape)
                 {
-                    AutoCompleteDropdown.Hide();
+                    HideAutoCompleteDropdown();
+                    e.Handled = true;
                 }
             }
             catch (Exception ex)
@@ -237,27 +308,53 @@ namespace ScriptWriter
             {
                 _isUpdatingUI = true;
 
-                string currentLine = GetCurrentLine().Trim();
+                string currentLine = GetCurrentLine();
+                string trimmedLine = currentLine.Trim();
+                var previousType = GetPreviousElementType();
 
-                if (string.IsNullOrWhiteSpace(currentLine))
+                if (ShouldTriggerParentheticalSuggestions(trimmedLine))
                 {
-                    var prevType = GetPreviousElementType();
-                    string autoIndent = _indentation.GetAutoIndentForNewLine(prevType);
+                    BeginAutoCompleteSession(GetCurrentLineStartIndex());
+                    AutoCompleteDropdown.ShowParentheticalSuggestions(trimmedLine);
+                    return;
+                }
 
-                    if (!string.IsNullOrEmpty(autoIndent))
+                if (ShouldTriggerCharacterSuggestions(trimmedLine, previousType))
+                {
+                    BeginAutoCompleteSession(GetCurrentLineStartIndex());
+                    AutoCompleteDropdown.ShowCharacterSuggestions(trimmedLine, _knownCharacters);
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(trimmedLine))
+                {
+                    var prevType = previousType;
+                    var suggested = prevType.HasValue
+                        ? _structureAdvisor.GetDefaultNextElement(prevType.Value)
+                        : null;
+
+                    if (suggested.HasValue)
                     {
-                        int caretIndex = ScriptEditor.CaretIndex;
-                        ScriptEditor.Text = ScriptEditor.Text.Insert(caretIndex, autoIndent);
-                        ScriptEditor.CaretIndex = caretIndex + autoIndent.Length;
+                        var indent = GetAutoIndentationString(suggested.Value);
+                        if (!string.IsNullOrEmpty(indent))
+                        {
+                            InsertIndentationString(indent);
+                            var profile = ScreenplayElementProfiles.GetProfile(suggested.Value);
+                            StatusText.Text = $"✓ Indented for {profile.DisplayName}";
+                            return;
+                        }
+                    }
+
+                    var fallback = _indentation.GetAutoIndentForNewLine(prevType);
+                    if (!string.IsNullOrEmpty(fallback))
+                    {
+                        InsertIndentationString(fallback);
                         StatusText.Text = "✓ Auto-indent applied";
+                        return;
                     }
                 }
-                else
-                {
-                    int caretIndex = ScriptEditor.CaretIndex;
-                    ScriptEditor.Text = ScriptEditor.Text.Insert(caretIndex, "\t");
-                    ScriptEditor.CaretIndex = caretIndex + 1;
-                }
+
+                InsertIndentationString("\t");
             }
             finally
             {
@@ -278,7 +375,7 @@ namespace ScriptWriter
                     int caretIndex = ScriptEditor.CaretIndex;
                     ScriptEditor.Text = ScriptEditor.Text.Insert(caretIndex, Environment.NewLine);
                     ScriptEditor.CaretIndex = caretIndex + Environment.NewLine.Length;
-                    AutoCompleteDropdown.Hide();
+                    HideAutoCompleteDropdown();
                     return;
                 }
 
@@ -311,6 +408,9 @@ namespace ScriptWriter
                     ScriptEditor.CaretIndex += Environment.NewLine.Length;
                 }
 
+                var suggestedNext = _structureAdvisor.GetDefaultNextElement(detectResult.ElementType);
+                InsertAutoIndentationFor(suggestedNext);
+
                 // Track character names
                 if (detectResult.ElementType == ScriptElementType.Character)
                 {
@@ -322,7 +422,7 @@ namespace ScriptWriter
                 }
 
                 StatusText.Text = $"✓ {detectResult.ElementType}";
-                AutoCompleteDropdown.Hide();
+                HideAutoCompleteDropdown();
             }
             finally
             {
@@ -332,77 +432,45 @@ namespace ScriptWriter
 
         private void AutoCompleteDropdown_ItemSelected(string selectedItem)
         {
+            if (string.IsNullOrWhiteSpace(selectedItem))
+                return;
+
             try
             {
                 _isUpdatingUI = true;
-                AutoCompleteDropdown.Hide();
+                var normalizedSelection = NormalizeSelectionForCurrentMode(selectedItem);
+                if (string.IsNullOrWhiteSpace(normalizedSelection))
+                    return;
 
-                int lineStartIndex = GetCurrentLineStartIndex();
-                int lineLength = GetCurrentLineLength();
-                string currentLine = GetCurrentLine();
+                var indent = GetIndentationForCurrentMode();
+                var replacement = string.Concat(indent, normalizedSelection);
 
-                // For time selection after dash (e.g., "INT. BEDROOM -" -> add "MORNING")
-                if (currentLine.Contains("-"))
-                {
-                    int dashIndex = currentLine.LastIndexOf("-");
-                    if (dashIndex >= 0)
-                    {
-                        // Keep everything before and including dash, append selected item
-                        string beforeDash = currentLine.Substring(0, dashIndex + 1).TrimEnd();
-                        string newLine = beforeDash + " " + selectedItem;
-                        
-                        // Replace entire line
-                        ScriptEditor.Select(lineStartIndex, lineLength);
-                        ScriptEditor.SelectedText = newLine;
-                        
-                        // Position cursor at end
-                        ScriptEditor.CaretIndex = lineStartIndex + newLine.Length;
-                        StatusText.Text = $"✓ {newLine}";
-                        return;
-                    }
-                }
+                int caretIndexBefore = Math.Max(0, Math.Min(ScriptEditor.CaretIndex, ScriptEditor.Text.Length));
+                int insertionStart = _autoCompleteAnchorIndex >= 0
+                    ? Math.Min(_autoCompleteAnchorIndex, ScriptEditor.Text.Length)
+                    : GetCurrentLineStartIndex();
 
-                // Normal case - replace entire line with selected item
-                // Check if current line already ends with what we're adding
-                string trimmedLine = currentLine.Trim();
-                string trimmedItem = selectedItem.Trim();
-                
-                // If current line is "INT" and we're selecting "INT." - replace it
-                // If current line is "INT." and we're selecting "INT." - don't add another dot
-                string finalText;
-                if (trimmedLine.EndsWith(".") && trimmedItem.StartsWith(trimmedLine))
-                {
-                    // Already has the dot, just use the selected item
-                    finalText = trimmedItem;
-                }
-                else if (trimmedLine == trimmedItem)
-                {
-                    // Exact match, use as is
-                    finalText = trimmedItem;
-                }
-                else if (trimmedLine.EndsWith(".") && trimmedItem.StartsWith(trimmedLine.TrimEnd('.')))
-                {
-                    // Line is "INT." and item is "INT. BEDROOM" - use item
-                    finalText = trimmedItem;
-                }
-                else
-                {
-                    // Use selected item as is
-                    finalText = trimmedItem;
-                }
-                
-                // Replace entire line
-                ScriptEditor.Select(lineStartIndex, lineLength);
-                ScriptEditor.SelectedText = finalText;
-                
-                // Position cursor at the END of the inserted text
-                int finalCaretPos = lineStartIndex + finalText.Length;
+                int insertionEnd = Math.Max(insertionStart, caretIndexBefore);
+
+                ScriptEditor.Select(insertionStart, insertionEnd - insertionStart);
+                ScriptEditor.SelectedText = replacement;
+
+                int finalCaretPos = insertionStart + replacement.Length;
                 ScriptEditor.CaretIndex = finalCaretPos;
-                
-                StatusText.Text = $"✓ {finalText}";
+                ScriptEditor.SelectionLength = 0;
+                int finalLineIndex = ScriptEditor.GetLineIndexFromCharacterIndex(finalCaretPos);
+                ScriptEditor.ScrollToLine(finalLineIndex);
+                ScriptEditor.Focus();
+
+                StatusText.Text = $"✓ {normalizedSelection}";
+            }
+            catch (Exception ex)
+            {
+                StatusText.Text = $"Error: {ex.Message}";
             }
             finally
             {
+                HideAutoCompleteDropdown();
                 _isUpdatingUI = false;
             }
         }
@@ -413,6 +481,96 @@ namespace ScriptWriter
             return -1;
         }
 
+        private string NormalizeSelectionForCurrentMode(string selection)
+        {
+            var mode = AutoCompleteDropdown.CurrentMode;
+            return mode switch
+            {
+                AutoCompleteDropdown.AutoCompleteMode.Parenthetical => EnsureParentheticalFormat(selection),
+                AutoCompleteDropdown.AutoCompleteMode.Character => selection.ToUpperInvariant(),
+                AutoCompleteDropdown.AutoCompleteMode.Slugline => selection.ToUpperInvariant(),
+                AutoCompleteDropdown.AutoCompleteMode.Transition => selection.ToUpperInvariant(),
+                AutoCompleteDropdown.AutoCompleteMode.Location => selection.ToUpperInvariant(),
+                AutoCompleteDropdown.AutoCompleteMode.TimeOfDay => selection.ToUpperInvariant(),
+                _ => selection
+            };
+        }
+
+        private static string EnsureParentheticalFormat(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return string.Empty;
+
+            var value = input.Trim();
+
+            if (!value.StartsWith("(", StringComparison.Ordinal))
+            {
+                value = "(" + value;
+            }
+
+            if (!value.EndsWith(")", StringComparison.Ordinal))
+            {
+                value += ")";
+            }
+
+            return value.ToLowerInvariant();
+        }
+
+        private bool ShouldTriggerCharacterSuggestions(string trimmedLine, ScriptElementType? previousType)
+        {
+            if (_knownCharacters.Count == 0)
+                return false;
+
+            if (!string.IsNullOrWhiteSpace(trimmedLine))
+            {
+                return IsLikelyCharacterLine(trimmedLine);
+            }
+
+            return previousType == ScriptElementType.Action ||
+                   previousType == ScriptElementType.SceneHeading ||
+                   previousType == ScriptElementType.Parenthetical ||
+                   previousType == ScriptElementType.Dialogue ||
+                   previousType == null;
+        }
+
+        private static bool IsLikelyCharacterLine(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return false;
+
+            if (value.Length > 40)
+                return false;
+
+            return value == value.ToUpperInvariant();
+        }
+
+        private bool ShouldTriggerParentheticalSuggestions(string trimmedLine)
+        {
+            if (string.IsNullOrWhiteSpace(trimmedLine))
+                return false;
+
+            return trimmedLine.StartsWith("(", StringComparison.Ordinal);
+        }
+
+        private bool IsSluglineTrigger(string line)
+        {
+            if (string.IsNullOrWhiteSpace(line))
+                return false;
+
+            var tokens = line.Trim()
+                .Split(new[] { ' ', '\t', '-' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (tokens.Length == 0)
+                return false;
+
+            var firstToken = tokens[0].ToUpperInvariant();
+
+            return firstToken == "INT" ||
+                   firstToken == "EXT" ||
+                   firstToken == "INT/EXT" ||
+                   firstToken == "EXT/INT";
+        }
+
         private void UpdateElementTypeDisplay(string currentLine)
         {
             try
@@ -420,14 +578,85 @@ namespace ScriptWriter
                 if (string.IsNullOrWhiteSpace(currentLine))
                 {
                     CurrentElementText.Text = "📝 (empty)";
+                    UpdateNextElementHint(null);
                     return;
                 }
 
                 var context = new ScriptContext(GetPreviousElementType(), false);
                 var result = _logic.DetectAndNormalize(currentLine, context);
                 CurrentElementText.Text = GetElementDescription(result.ElementType);
+                _activeElementType = result.ElementType;
+                UpdateNextElementHint(result.ElementType);
             }
             catch { }
+        }
+
+        private void UpdateNextElementHint(ScriptElementType? currentType)
+        {
+            try
+            {
+                var baseType = currentType ?? ScriptElementType.Action;
+                var preferred = _structureAdvisor.GetPreferredNextElements(baseType);
+                if (preferred == null || preferred.Count == 0)
+                {
+                    NextElementText.Text = "Next: (free)";
+                    return;
+                }
+
+                var nextType = preferred[0];
+                var profile = ScreenplayElementProfiles.GetProfile(nextType);
+                var margins = _indentationService.GetElementMargins(nextType);
+                NextElementText.Text = $"Next: {profile.DisplayName} ({margins.LeftMarginInches:0.0}\" / {margins.RightMarginInches:0.0}\")";
+            }
+            catch
+            {
+                NextElementText.Text = "Next: (free)";
+            }
+        }
+
+        private void InsertAutoIndentationFor(ScriptElementType? nextType)
+        {
+            if (!nextType.HasValue)
+                return;
+
+            var indent = GetAutoIndentationString(nextType.Value);
+            if (string.IsNullOrEmpty(indent))
+                return;
+
+            InsertIndentationString(indent);
+        }
+
+        private void InsertIndentationString(string indent)
+        {
+            if (string.IsNullOrEmpty(indent))
+                return;
+
+            int caretIndex = ScriptEditor.CaretIndex;
+            ScriptEditor.Text = ScriptEditor.Text.Insert(caretIndex, indent);
+            ScriptEditor.CaretIndex = caretIndex + indent.Length;
+        }
+
+        private string GetIndentationForCurrentMode()
+        {
+            return AutoCompleteDropdown.CurrentMode switch
+            {
+                AutoCompleteDropdown.AutoCompleteMode.Character => GetAutoIndentationString(ScriptElementType.Character),
+                AutoCompleteDropdown.AutoCompleteMode.Parenthetical => GetAutoIndentationString(ScriptElementType.Parenthetical),
+                AutoCompleteDropdown.AutoCompleteMode.Transition => GetAutoIndentationString(ScriptElementType.Transition),
+                _ => string.Empty
+            };
+        }
+
+        private string GetAutoIndentationString(ScriptElementType type)
+        {
+            if (type == ScriptElementType.SceneHeading ||
+                type == ScriptElementType.Action ||
+                type == ScriptElementType.Shot)
+            {
+                return string.Empty;
+            }
+
+            return _indentation.GetIndentation(type);
         }
 
         private string GetElementDescription(ScriptElementType type)

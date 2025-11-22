@@ -58,79 +58,13 @@ namespace App.Core.Services
         /// </summary>
         public ElementMargins GetElementMargins(ScriptElementType elementType)
         {
-            return elementType switch
+            var profile = ScreenplayElementProfiles.GetProfile(elementType);
+            return new ElementMargins
             {
-                ScriptElementType.SceneHeading => new ElementMargins
-                {
-                    LeftMarginInches = 1.5,
-                    RightMarginInches = 1.0,
-                    Alignment = ElementAlignment.Left,
-                    Description = "Scene Heading"
-                },
-
-                ScriptElementType.Action => new ElementMargins
-                {
-                    LeftMarginInches = 1.5,
-                    RightMarginInches = 1.0,
-                    Alignment = ElementAlignment.Left,
-                    Description = "Action"
-                },
-
-                ScriptElementType.Character => new ElementMargins
-                {
-                    LeftMarginInches = 3.5,
-                    RightMarginInches = 1.0,
-                    Alignment = ElementAlignment.Center,
-                    Description = "Character"
-                },
-
-                ScriptElementType.Dialogue => new ElementMargins
-                {
-                    LeftMarginInches = 2.5,
-                    RightMarginInches = 1.5,
-                    Alignment = ElementAlignment.Left,
-                    Description = "Dialogue"
-                },
-
-                ScriptElementType.Parenthetical => new ElementMargins
-                {
-                    LeftMarginInches = 3.0,
-                    RightMarginInches = 2.0,
-                    Alignment = ElementAlignment.Left,
-                    Description = "Parenthetical"
-                },
-
-                ScriptElementType.Transition => new ElementMargins
-                {
-                    LeftMarginInches = 6.0,
-                    RightMarginInches = 1.0,
-                    Alignment = ElementAlignment.Right,
-                    Description = "Transition"
-                },
-
-                ScriptElementType.Shot => new ElementMargins
-                {
-                    LeftMarginInches = 1.5,
-                    RightMarginInches = 1.0,
-                    Alignment = ElementAlignment.Left,
-                    Description = "Shot"
-                },
-
-                ScriptElementType.CenteredText => new ElementMargins
-                {
-                    LeftMarginInches = 2.5,
-                    RightMarginInches = 2.5,
-                    Alignment = ElementAlignment.Center,
-                    Description = "Centered Text"
-                },
-
-                _ => new ElementMargins
-                {
-                    LeftMarginInches = 1.5,
-                    RightMarginInches = 1.0,
-                    Alignment = ElementAlignment.Left,
-                    Description = "Default"
-                }
+                LeftMarginInches = profile.LeftMarginInches,
+                RightMarginInches = profile.RightMarginInches,
+                Alignment = profile.Alignment,
+                Description = profile.DisplayName
             };
         }
 
@@ -211,13 +145,6 @@ namespace App.Core.Services
         {
             return inches * DPI;
         }
-    }
-
-    public enum ElementAlignment
-    {
-        Left,
-        Center,
-        Right
     }
 
     public class ElementMargins

@@ -26,18 +26,8 @@ namespace App.Core.Services
         /// </summary>
         public double GetLeftMarginInches(ScriptElementType elementType)
         {
-            return elementType switch
-            {
-                ScriptElementType.SceneHeading => 1.5,
-                ScriptElementType.Action => 1.5,
-                ScriptElementType.Character => 3.5,
-                ScriptElementType.Dialogue => 2.5,
-                ScriptElementType.Parenthetical => 3.0,
-                ScriptElementType.Transition => 2.0,
-                ScriptElementType.Shot => 1.5,
-                ScriptElementType.CenteredText => 0.0,
-                _ => 1.5
-            };
+            var profile = ScreenplayElementProfiles.GetProfile(elementType);
+            return profile.LeftMarginInches;
         }
 
         /// <summary>
@@ -45,18 +35,8 @@ namespace App.Core.Services
         /// </summary>
         public double GetRightMarginInches(ScriptElementType elementType)
         {
-            return elementType switch
-            {
-                ScriptElementType.SceneHeading => 1.0,
-                ScriptElementType.Action => 1.0,
-                ScriptElementType.Character => 1.0,
-                ScriptElementType.Dialogue => 1.5,
-                ScriptElementType.Parenthetical => 2.0,
-                ScriptElementType.Transition => 1.0,
-                ScriptElementType.Shot => 1.0,
-                ScriptElementType.CenteredText => 2.5,
-                _ => 1.0
-            };
+            var profile = ScreenplayElementProfiles.GetProfile(elementType);
+            return profile.RightMarginInches;
         }
 
         /// <summary>
@@ -64,11 +44,11 @@ namespace App.Core.Services
         /// </summary>
         public string GetAlignment(ScriptElementType elementType)
         {
-            return elementType switch
+            var profile = ScreenplayElementProfiles.GetProfile(elementType);
+            return profile.Alignment switch
             {
-                ScriptElementType.Character => "CENTER",
-                ScriptElementType.Transition => "RIGHT",
-                ScriptElementType.CenteredText => "CENTER",
+                App.Core.Models.ElementAlignment.Center => "CENTER",
+                App.Core.Models.ElementAlignment.Right => "RIGHT",
                 _ => "LEFT"
             };
         }

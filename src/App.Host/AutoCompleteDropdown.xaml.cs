@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using App.Core.Services;
 
 namespace ScriptWriter
@@ -19,12 +20,16 @@ namespace ScriptWriter
             Slugline,
             Location,
             TimeOfDay,
-            Character
+            Character,
+            Parenthetical
         }
 
         private AutoCompleteMode _currentMode = AutoCompleteMode.Transition;
+        private readonly List<string> _characterCache = new();
 
         public event Action<string> ItemSelected;
+
+        public AutoCompleteMode CurrentMode => _currentMode;
 
         public AutoCompleteDropdown()
         {
@@ -84,22 +89,35 @@ namespace ScriptWriter
         /// <summary>
         /// Show suggestions for characters
         /// </summary>
-        public void ShowCharacterSuggestions(string query, List<string> knownCharacters)
+        public void ShowCharacterSuggestions(string query, List<string> knownCharacters, bool keepEditorFocus = true)
         {
             _currentMode = AutoCompleteMode.Character;
             SearchBox.Text = query;
-            
-            var filtered = string.IsNullOrEmpty(query)
-                ? knownCharacters.Take(10).ToList()
-                : knownCharacters.Where(c => c.Contains(query, StringComparison.OrdinalIgnoreCase))
-                    .OrderBy(c => c.IndexOf(query, StringComparison.OrdinalIgnoreCase))
-                    .Take(10)
-                    .ToList();
 
-            UpdateSuggestionsFromList(filtered);
+            _characterCache.Clear();
+            if (knownCharacters != null && knownCharacters.Count > 0)
+            {
+                _characterCache.AddRange(knownCharacters
+                    .Select(c => c.ToUpperInvariant())
+                    .Distinct(StringComparer.OrdinalIgnoreCase));
+            }
+
+            UpdateCharacterSuggestions(query);
             this.Visibility = Visibility.Visible;
-            SearchBox.Focus();
-            SearchBox.SelectAll();
+
+            if (!keepEditorFocus)
+            {
+                SearchBox.Focus();
+                SearchBox.SelectAll();
+            }
+        }
+
+        public void ShowParentheticalSuggestions(string query = "")
+        {
+            _currentMode = AutoCompleteMode.Parenthetical;
+            SearchBox.Text = query;
+            UpdateSuggestions(query);
+            this.Visibility = Visibility.Visible;
         }
 
         private void UpdateSuggestions(string query)
@@ -109,10 +127,24 @@ namespace ScriptWriter
                 AutoCompleteMode.Transition => AutoCompleteEngine.SearchTransitions(query),
                 AutoCompleteMode.Location => AutoCompleteEngine.SearchLocations(query),
                 AutoCompleteMode.TimeOfDay => AutoCompleteEngine.SearchTimeOfDay(query),
+                AutoCompleteMode.Parenthetical => AutoCompleteEngine.SearchParentheticals(query),
                 _ => new List<string>()
             };
 
             UpdateSuggestionsFromList(results);
+        }
+
+        private void UpdateCharacterSuggestions(string query)
+        {
+            var filtered = string.IsNullOrWhiteSpace(query)
+                ? _characterCache.Take(10).ToList()
+                : _characterCache
+                    .Where(c => c.Contains(query, StringComparison.OrdinalIgnoreCase))
+                    .OrderBy(c => c.IndexOf(query, StringComparison.OrdinalIgnoreCase))
+                    .Take(10)
+                    .ToList();
+
+            UpdateSuggestionsFromList(filtered);
         }
 
         private void UpdateSuggestionsFromList(List<string> results)
@@ -136,6 +168,15 @@ namespace ScriptWriter
 
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
+            if (_currentMode == AutoCompleteMode.Slugline)
+                return;
+
+            if (_currentMode == AutoCompleteMode.Character)
+            {
+                UpdateCharacterSuggestions(SearchBox.Text);
+                return;
+            }
+
             UpdateSuggestions(SearchBox.Text);
         }
 
@@ -227,8 +268,24 @@ namespace ScriptWriter
             }
         }
 
+        private void ResultsList_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            var listBoxItem = FindAncestor<ListBoxItem>(e.OriginalSource as DependencyObject);
+            if (listBoxItem == null)
+                return;
+
+            if (listBoxItem.DataContext is string value)
+            {
+                SelectItem(value);
+                e.Handled = true;
+            }
+        }
+
         private void SelectItem(string item)
         {
+            if (string.IsNullOrWhiteSpace(item))
+                return;
+
             ItemSelected?.Invoke(item);
             this.Visibility = Visibility.Collapsed;
             ResultsList.SelectedIndex = -1;
@@ -256,6 +313,33 @@ namespace ScriptWriter
                     ResultsList.SelectedIndex--;
                 }
             }
+        }
+
+        public bool TryCommitSelection()
+        {
+            if (Suggestions.Count == 0)
+                return false;
+
+            if (ResultsList.SelectedIndex < 0)
+            {
+                ResultsList.SelectedIndex = 0;
+            }
+
+            SelectItem(Suggestions[ResultsList.SelectedIndex]);
+            return true;
+        }
+
+        private static T? FindAncestor<T>(DependencyObject? current) where T : DependencyObject
+        {
+            while (current != null)
+            {
+                if (current is T match)
+                    return match;
+
+                current = VisualTreeHelper.GetParent(current);
+            }
+
+            return null;
         }
     }
 }

@@ -92,6 +92,30 @@ namespace App.Core.Services
             "LOBBY"
         };
 
+        private static readonly string[] SluglinePrefixes = new[]
+        {
+            "INT.",
+            "EXT.",
+            "INT./EXT.",
+            "EXT./INT."
+        };
+
+        private static readonly List<string> ParentheticalSuggestions = new()
+        {
+            "(WHISPER)",
+            "(SHOUTS)",
+            "(BEAT)",
+            "(CONT'D)",
+            "(V.O.)",
+            "(O.S.)",
+            "(O.C.)",
+            "(SOFTLY)",
+            "(INTO PHONE)",
+            "(ON RADIO)",
+            "(TO CAMERA)",
+            "(ASIDE)"
+        };
+
         /// <summary>
         /// Search for matching transitions
         /// </summary>
@@ -145,65 +169,189 @@ namespace App.Core.Services
         /// </summary>
         public static List<string> GenerateSluglineSuggestions(string sluglineQuery = "")
         {
+            sluglineQuery ??= string.Empty;
+
+            var upper = sluglineQuery.TrimStart().ToUpperInvariant();
             var suggestions = new List<string>();
-            var upper = sluglineQuery.ToUpperInvariant().Trim();
 
-            // Remove the dot if user has already typed it (auto-formatter adds it)
-            if (upper.EndsWith("."))
+            var prefixInfo = ResolveSluglinePrefix(upper);
+            if (!prefixInfo.HasPrefix)
             {
-                upper = upper.Substring(0, upper.Length - 1);
-            }
-
-            // If user just typed "INT", show base options first
-            if (upper == "INT")
-            {
-                suggestions.Add("INT.");
-                suggestions.Add("INT./EXT.");
-            }
-            else if (upper == "EXT")
-            {
-                suggestions.Add("EXT.");
-                suggestions.Add("EXT./INT.");
-            }
-            // If user typed "INT." or more, show locations
-            else if (upper.StartsWith("INT") && !upper.Contains("-"))
-            {
-                // Show INT. base option first
-                if (!upper.Contains("."))
-                {
-                    suggestions.Add("INT.");
-                }
-                
-                // Then show common locations
-                var locations = CommonLocations.Take(8).ToList();
-                foreach (var location in locations)
-                {
-                    suggestions.Add($"INT. {location}");
-                }
-            }
-            else if (upper.StartsWith("EXT") && !upper.Contains("-"))
-            {
-                // Show EXT. base option first
-                if (!upper.Contains("."))
-                {
-                    suggestions.Add("EXT.");
-                }
-                
-                // Then show common locations
-                var locations = CommonLocations.Take(8).ToList();
-                foreach (var location in locations)
-                {
-                    suggestions.Add($"EXT. {location}");
-                }
-            }
-            // If user has added a dash, show times
-            else if (upper.Contains("-"))
-            {
-                var times = TimeOfDay.Take(10).ToList();
-                suggestions.AddRange(times);
+                return BuildPrefixSuggestionList(upper);
             }
 
-            return suggestions;
+            var remainder = prefixInfo.Remainder.TrimStart();
+            if (string.IsNullOrEmpty(remainder))
+            {
+                suggestions.Add(prefixInfo.Prefix);
+                suggestions.AddRange(
+                    FilterLocations(string.Empty)
+                        .Select(location => $"{prefixInfo.Prefix} {location}")
+                );
+
+                return suggestions
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .Take(10)
+                    .ToList();
+            }
+
+            var dashIndex = remainder.IndexOf('-');
+            var hasDash = dashIndex >= 0;
+            var locationPart = hasDash
+                ? remainder.Substring(0, dashIndex).Trim()
+                : remainder.Trim();
+            var timePart = hasDash
+                ? remainder.Substring(dashIndex + 1).Trim()
+                : string.Empty;
+
+            if (!hasDash)
+            {
+                var locationMatches = FilterLocations(locationPart)
+                    .Select(location => $"{prefixInfo.Prefix} {location}");
+
+                suggestions.AddRange(locationMatches);
+
+                if (!string.IsNullOrEmpty(locationPart))
+                {
+                    suggestions.Add($"{prefixInfo.Prefix} {locationPart} - ");
+                }
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(locationPart))
+                {
+                    locationPart = "LOCATION";
+                }
+
+                var timeMatches = FilterTimes(timePart)
+                    .Select(time => $"{prefixInfo.Prefix} {locationPart} - {time}");
+
+                suggestions.AddRange(timeMatches);
+            }
+
+            return suggestions
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Take(10)
+                .ToList();
+        }
+
+        private static List<string> BuildPrefixSuggestionList(string prefixSeed)
+        {
+            var seeds = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(prefixSeed))
+            {
+                seeds.AddRange(SluglinePrefixes);
+            }
+            else
+            {
+                var matches = SluglinePrefixes
+                    .Where(p => p.StartsWith(prefixSeed, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                if (matches.Count == 0)
+                {
+                    seeds.AddRange(SluglinePrefixes);
+                }
+                else
+                {
+                    seeds.AddRange(matches);
+                }
+            }
+
+            return seeds
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Take(10)
+                .ToList();
+        }
+
+        private static IEnumerable<string> FilterLocations(string userInput)
+        {
+            if (string.IsNullOrWhiteSpace(userInput))
+                return CommonLocations.Take(10);
+
+            return CommonLocations
+                .Where(location => location.Contains(userInput, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(location => location.StartsWith(userInput, StringComparison.OrdinalIgnoreCase) ? 0 : 1)
+                .ThenBy(location => location.IndexOf(userInput, StringComparison.OrdinalIgnoreCase))
+                .Take(10);
+        }
+
+        private static IEnumerable<string> FilterTimes(string userInput)
+        {
+            if (string.IsNullOrWhiteSpace(userInput))
+                return TimeOfDay.Take(10);
+
+            return TimeOfDay
+                .Where(time => time.Contains(userInput, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(time => time.IndexOf(userInput, StringComparison.OrdinalIgnoreCase))
+                .Take(10);
+        }
+
+        public static List<string> SearchParentheticals(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return ParentheticalSuggestions.Take(10).ToList();
+
+            var trimmed = query.Trim();
+            if (!trimmed.StartsWith("(", StringComparison.Ordinal))
+            {
+                trimmed = "(" + trimmed;
+            }
+            if (!trimmed.EndsWith(")", StringComparison.Ordinal))
+            {
+                trimmed += ")";
+            }
+
+            var token = trimmed.Trim('(', ')');
+
+            return ParentheticalSuggestions
+                .Prepend(trimmed.ToUpperInvariant())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Where(p => p.Contains(token, StringComparison.OrdinalIgnoreCase))
+                .Take(10)
+                .ToList();
+        }
+
+        private static (bool HasPrefix, string Prefix, string Remainder) ResolveSluglinePrefix(string upper)
+        {
+            if (string.IsNullOrWhiteSpace(upper))
+                return (false, string.Empty, string.Empty);
+
+            foreach (var prefix in SluglinePrefixes.OrderByDescending(p => p.Length))
+            {
+                if (upper.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    return (true, prefix, upper.Substring(prefix.Length));
+                }
+            }
+
+            if (upper.StartsWith("INT/EXT", StringComparison.OrdinalIgnoreCase))
+            {
+                var remainder = upper.Substring("INT/EXT".Length);
+                return (true, "INT./EXT.", remainder);
+            }
+
+            if (upper.StartsWith("EXT/INT", StringComparison.OrdinalIgnoreCase))
+            {
+                var remainder = upper.Substring("EXT/INT".Length);
+                return (true, "EXT./INT.", remainder);
+            }
+
+            if (upper.StartsWith("INT", StringComparison.OrdinalIgnoreCase))
+            {
+                var remainder = upper.Length > 3 ? upper.Substring(3) : string.Empty;
+                return (true, "INT.", remainder);
+            }
+
+            if (upper.StartsWith("EXT", StringComparison.OrdinalIgnoreCase))
+            {
+                var remainder = upper.Length > 3 ? upper.Substring(3) : string.Empty;
+                return (true, "EXT.", remainder);
+            }
+
+            return (false, string.Empty, string.Empty);
         }
 
         private static bool IsInteriorLocation(string location)
