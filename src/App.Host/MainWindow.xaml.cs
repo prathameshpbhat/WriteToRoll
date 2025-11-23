@@ -18,6 +18,9 @@ namespace ScriptWriter
         private SmartIndentationService _indentationService;
         private ScreenplayStructureAdvisor _structureAdvisor;
         private IFountainParser _fountainParser;
+        private ContextAwareFormattingEngine _contextFormatter;
+        private ElementTypeDetector _elementDetector;
+        private PageFormatting _pageFormat;
 
         private Script _currentScript;
         private bool _isUpdatingUI = false;
@@ -37,6 +40,9 @@ namespace ScriptWriter
                 _indentationService = new SmartIndentationService();
                 _structureAdvisor = new ScreenplayStructureAdvisor();
                 _fountainParser = new FountainParser();
+                _contextFormatter = new ContextAwareFormattingEngine(_logic);
+                _elementDetector = new ElementTypeDetector(_logic);
+                _pageFormat = PageFormatting.StandardLetter();
                 _currentScript = new Script();
                 _activeElementType = ScriptElementType.Action;
 
@@ -59,7 +65,8 @@ namespace ScriptWriter
         }
 
         /// <summary>
-        /// Main TextChanged event - triggers real-time auto-formatting with margins
+        /// Main TextChanged event - MASTER DETECTION using ElementTypeDetector
+        /// Determines element type, formats content (NOT indentation), updates UI
         /// </summary>
         private void ScriptEditor_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -82,37 +89,36 @@ namespace ScriptWriter
                     return;
                 }
 
-                // Skip auto-formatting for INT/EXT/FADE/CUT - let dropdown handle it
-                string upper = trimmed.ToUpperInvariant();
-                if (!(upper.StartsWith("INT") || upper.StartsWith("EXT") || 
-                      upper.Contains("FADE") || upper.Contains("CUT") || 
-                      upper.Contains("DISSOLVE") || upper.Contains("SMASH") || 
-                      upper.Contains("MATCH") || upper.Contains("WIPE") ||
-                      upper.Contains("IRIS") || upper.Contains("FLASH") || 
-                      upper.Contains("BACK") || upper.Contains("MONTAGE")))
+                // ===== MASTER DETECTION =====
+                // Get element type based on content + context
+                var previousType = GetPreviousElementType();
+                var detectedType = _elementDetector.DetectElementType(trimmed, previousType);
+                
+                // Format content (ONLY the text, preserve indentation)
+                var formatted = _elementDetector.FormatLineContent(trimmed, detectedType);
+                
+                // Apply formatting if content changed
+                if (formatted != trimmed)
                 {
-                    // Apply auto-formatting only for non-dropdown items
-                    var formatResult = _autoFormatter.FormatAsYouType(trimmed);
-
-                    if (formatResult.WasChanged)
+                    int lineStartIndex = GetCurrentLineStartIndex();
+                    int lineLength = GetCurrentLineLength();
+                    
+                    if (lineLength > 0)
                     {
-                        int lineStartIndex = GetCurrentLineStartIndex();
-                        int lineLength = GetCurrentLineLength();
-
-                        if (lineLength > 0)
-                        {
-                            ScriptEditor.Select(lineStartIndex, lineLength);
-                            ScriptEditor.SelectedText = formatResult.FormattedText;
-                        }
-
-                        int newCaretIndex = lineStartIndex + formatResult.CaretPosition;
-                        ScriptEditor.CaretIndex = Math.Min(newCaretIndex, ScriptEditor.Text.Length);
-
-                        StatusText.Text = $"✓ {formatResult.FormattedText.Substring(0, Math.Min(40, formatResult.FormattedText.Length))}";
+                        ScriptEditor.Select(lineStartIndex, lineLength);
+                        ScriptEditor.SelectedText = formatted;
+                        StatusText.Text = $"✓ {detectedType}: {formatted.Substring(0, Math.Min(40, formatted.Length))}";
                     }
                 }
+                else
+                {
+                    StatusText.Text = $"✓ {_elementDetector.GetElementDisplayName(detectedType)}";
+                }
 
-                UpdateElementTypeDisplay(trimmed);
+                _activeElementType = detectedType;
+                CurrentElementText.Text = _elementDetector.GetElementDisplayName(detectedType);
+                UpdateNextElementHint(detectedType);
+                
                 UpdateLineNumbers();
                 UpdateStatistics();
 
@@ -312,6 +318,32 @@ namespace ScriptWriter
                 string trimmedLine = currentLine.Trim();
                 var previousType = GetPreviousElementType();
 
+                // ===== MASTER TAB DETECTION =====
+                // If current line is just a word after ACTION/SCENE/TRANSITION → Treat as CHARACTER
+                if (!string.IsNullOrWhiteSpace(trimmedLine) && previousType.HasValue &&
+                    (previousType == ScriptElementType.Action ||
+                     previousType == ScriptElementType.SceneHeading ||
+                     previousType == ScriptElementType.Transition))
+                {
+                    // Check if looks like character name (uppercase)
+                    var detectedType = _elementDetector.DetectElementType(trimmedLine, previousType);
+                    if (detectedType == ScriptElementType.Character)
+                    {
+                        string formatted = _elementDetector.FormatLineContent(trimmedLine, ScriptElementType.Character);
+                        int lineStartIndex = GetCurrentLineStartIndex();
+                        int lineLength = GetCurrentLineLength();
+                        if (lineLength > 0)
+                        {
+                            ScriptEditor.Select(lineStartIndex, lineLength);
+                            ScriptEditor.SelectedText = formatted;
+                            _activeElementType = ScriptElementType.Character;
+                            UpdateNextElementHint(ScriptElementType.Character);
+                            StatusText.Text = $"✓ CHARACTER: {formatted}";
+                            return;
+                        }
+                    }
+                }
+
                 if (ShouldTriggerParentheticalSuggestions(trimmedLine))
                 {
                     BeginAutoCompleteSession(GetCurrentLineStartIndex());
@@ -380,7 +412,11 @@ namespace ScriptWriter
                 }
 
                 var previousType = GetPreviousElementType();
-                var formatResult = _autoFormatter.FormatOnEnter(currentLine, previousType);
+                
+                // ===== MASTER ENTER DETECTION =====
+                // Detect what current line is, format it, then suggest next
+                var detectedType = _elementDetector.DetectElementType(currentLine, previousType);
+                var formatted = _elementDetector.FormatLineContent(currentLine, detectedType);
 
                 int lineStartIndex = GetCurrentLineStartIndex();
                 int lineLength = GetCurrentLineLength();
@@ -388,40 +424,38 @@ namespace ScriptWriter
                 if (lineLength > 0)
                 {
                     ScriptEditor.Select(lineStartIndex, lineLength);
-                    ScriptEditor.SelectedText = formatResult.FormattedText;
+                    ScriptEditor.SelectedText = formatted;
                 }
 
-                int caretPos = lineStartIndex + formatResult.FormattedText.Length;
+                int caretPos = lineStartIndex + formatted.Length;
                 ScriptEditor.CaretIndex = caretPos;
 
                 ScriptEditor.Text = ScriptEditor.Text.Insert(caretPos, Environment.NewLine);
                 ScriptEditor.CaretIndex = caretPos + Environment.NewLine.Length;
 
-                var context = new ScriptContext(previousType, true);
-                var detectResult = _logic.DetectAndNormalize(currentLine, context);
-
-                if (detectResult.ElementType == ScriptElementType.SceneHeading ||
-                    detectResult.ElementType == ScriptElementType.Action ||
-                    detectResult.ElementType == ScriptElementType.Transition)
+                // Add blank line after SCENE/ACTION/TRANSITION for readability
+                if (detectedType == ScriptElementType.SceneHeading ||
+                    detectedType == ScriptElementType.Action ||
+                    detectedType == ScriptElementType.Transition)
                 {
                     ScriptEditor.Text = ScriptEditor.Text.Insert(ScriptEditor.CaretIndex, Environment.NewLine);
                     ScriptEditor.CaretIndex += Environment.NewLine.Length;
                 }
 
-                var suggestedNext = _structureAdvisor.GetDefaultNextElement(detectResult.ElementType);
+                var suggestedNext = _structureAdvisor.GetDefaultNextElement(detectedType);
                 InsertAutoIndentationFor(suggestedNext);
 
                 // Track character names
-                if (detectResult.ElementType == ScriptElementType.Character)
+                if (detectedType == ScriptElementType.Character)
                 {
-                    var charName = currentLine.ToUpper();
+                    var charName = formatted.ToUpper();
                     if (!_knownCharacters.Contains(charName))
                     {
                         _knownCharacters.Add(charName);
                     }
                 }
 
-                StatusText.Text = $"✓ {detectResult.ElementType}";
+                StatusText.Text = $"✓ {detectedType}";
                 HideAutoCompleteDropdown();
             }
             finally
