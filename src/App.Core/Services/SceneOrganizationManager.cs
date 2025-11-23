@@ -110,12 +110,12 @@ namespace App.Core.Services
                 var node = new SceneNode
                 {
                     SceneIndex = scenes.IndexOf(scene),
-                    SceneHeading = scene.Title,
-                    Synopsis = scene.Synopsis,
-                    PageStart = scene.PageStart,
-                    PageEnd = scene.PageEnd,
-                    LineCount = scene.ElementsCount,
-                    EstimatedDuration = (scene.PageEnd - scene.PageStart + 1) * 1.0,  // ~1 minute per page
+                    SceneHeading = scene.Heading.ToString(),
+                    Synopsis = scene.IndexCard.Summary,
+                    PageStart = scene.Number ?? 1,
+                    PageEnd = scene.Number ?? 1,
+                    LineCount = scene.Content.Count,
+                    EstimatedDuration = scene.Content.Count * 0.1,  // Rough estimate
                     CharactersInScene = ExtractCharactersFromScene(elements, scene)
                 };
                 sceneNodes.Add(node);

@@ -139,7 +139,7 @@ namespace App.Core.Services
 
             foreach (var element in elements.OfType<DialogueElement>())
             {
-                if (castReports.TryGetValue(element.Character, out var report))
+                if (castReports.TryGetValue(element.SpeakerName, out var report))
                 {
                     report.DialogueLines++;
                     report.WordCount += element.Text.Split().Length;

@@ -328,7 +328,7 @@ namespace App.Core.Services
             var completedOps = _operations.Values.Where(o => o.Status.Contains("Completed"));
             var successfulItems = completedOps.Sum(o => o.SuccessfulItems);
             var failedItems = completedOps.Sum(o => o.FailedItems);
-            var totalTime = completedOps.Sum(o => (o.EndTime ?? DateTime.UtcNow - o.StartTime).TotalSeconds);
+            var totalTime = completedOps.Sum(o => ((o.EndTime ?? DateTime.UtcNow) - o.StartTime).TotalSeconds);
 
             sb.AppendLine($"Total Batches: {_operations.Count}");
             sb.AppendLine($"Completed: {completedOps.Count()}");
